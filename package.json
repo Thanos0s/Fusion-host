@@ -2,6 +2,7 @@
   "name": "fusionhost-monorepo",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "description": "FusionHost — Platform-as-a-Service for AI Coding Agents and Humans",
   "workspaces": [
     "packages/*",
