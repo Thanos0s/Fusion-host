@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FusionHost — "Tell your agent once, ship your app"</title>
+  <meta name="description" content="A modern, zero-config Platform-as-a-Service for AI coding agents and human developers. Auto-provisions PostgreSQL, synthesizes containers, and ships with zero YAML.">
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+            },
+            accent: {
+              teal: '#14b8a6',
+              cyan: '#06b6d4',
+              violet: '#8b5cf6',
+              emerald: '#10b981',
+            },
+            slate: {
+              850: '#111622',
+              900: '#0b0f19',
+              950: '#06090f',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #06090f;
+      color: #f1f5f9;
+      font-family: 'Inter', sans-serif;
+    }
+    .glow-bg {
+      background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.12) 0%, rgba(6, 182, 212, 0.05) 35%, transparent 70%);
+    }
+    .card-border {
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .card-border:hover {
+      border-color: rgba(52, 211, 153, 0.3);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100 flex flex-col antialiased selection:bg-brand-500/30 selection:text-brand-400">
+
+  <!-- ==================== 1. GLOBAL NAVIGATION ==================== -->
+  <header class="sticky top-0 z-50 w-full border-b border-white/[0.08] bg-slate-950/80 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-8">
+        <a href="#" class="flex items-center gap-2.5 group">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-500 to-accent-cyan flex items-center justify-center text-slate-950 font-black shadow-lg shadow-brand-500/20 group-hover:scale-105 transition-transform">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+          <span class="text-lg font-extrabold tracking-tight text-white group-hover:text-brand-400 transition-colors">
+            FusionHost
+          </span>
+          <span class="text-[10px] font-mono font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-slate-800 text-brand-400 border border-brand-500/30">
+            Agent-PaaS
+          </span>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-400">
+          <div class="relative group">
+            <button class="hover:text-white transition-colors flex items-center gap-1 py-2">
+              Features
+              <svg class="w-3.5 h-3.5 opacity-60 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div class="absolute left-0 top-full hidden group-hover:block w-64 p-2 bg-slate-900 border border-white/10 rounded-xl shadow-2xl backdrop-blur-2xl">
+              <a href="#sandbox" class="block p-2 rounded-lg hover:bg-slate-800 transition-colors">
+                <div class="font-semibold text-white text-xs">Deterministic Code Engine</div>
+                <div class="text-[11px] text-slate-400">Zero-config Node &amp; Python scanner</div>
+              </a>
+              <a href="#features" class="block p-2 rounded-lg hover:bg-slate-800 transition-colors">
+                <div class="font-semibold text-white text-xs">PostgreSQL Provisioning</div>
+                <div class="text-[11px] text-slate-400">Auto-created on database client import</div>
+              </a>
+              <a href="#agent-protocol" class="block p-2 rounded-lg hover:bg-slate-800 transition-colors">
+                <div class="font-semibold text-white text-xs">MCP Server &amp; agent.md</div>
+                <div class="text-[11px] text-slate-400">Autonomous deploy for Claude/Cursor</div>
+              </a>
+            </div>
+          </div>
+          <a href="#sandbox" class="hover:text-white transition-colors">Interactive Sandbox</a>
+          <a href="#limitations" class="hover:text-white transition-colors flex items-center gap-1 text-amber-400">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+            Where It Stops
+          </a>
+          <a href="#pricing" class="hover:text-white transition-colors">Pricing</a>
+          <a href="#compare" class="hover:text-white transition-colors">Compare vs Render</a>
+          <a href="#docs" class="hover:text-white transition-colors">Docs</a>
+        </nav>
+      </div>
+
+      <!-- Action CTAs -->
+      <div class="flex items-center gap-3">
+        <a href="http://localhost:3000/dashboard" class="hidden sm:inline-block text-xs font-semibold text-slate-300 hover:text-white px-3 py-2 transition-colors">
+          Sign In
+        </a>
+        <a href="http://localhost:3000/dashboard" class="inline-flex items-center gap-1.5 bg-gradient-to-r from-brand-500 to-accent-teal hover:from-brand-600 hover:to-accent-teal text-slate-950 text-xs font-bold px-4 py-2 rounded-lg shadow-md shadow-brand-500/10 hover:shadow-brand-500/20 transition-all hover:scale-105">
+          <span>Get Started Free</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== 2. HERO SECTION ==================== -->
+  <section class="relative pt-16 pb-20 md:pt-28 md:pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden">
+    <div class="absolute inset-0 glow-bg pointer-events-none -z-10"></div>
+
+    <div class="text-center max-w-4xl mx-auto">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-brand-500/30 bg-brand-500/10 text-xs font-semibold text-brand-400 mb-8 shadow-sm">
+        <span class="w-2 h-2 rounded-full bg-brand-400 animate-pulse"></span>
+        Built for AI Coding Agents &amp; Solo Builders
+      </div>
+
+      <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.08] mb-6">
+        Tell your agent once,<br>
+        <span class="bg-clip-text text-transparent bg-gradient-to-r from-brand-400 via-accent-cyan to-accent-teal">
+          ship your app.
+        </span>
+      </h1>
+
+      <p class="text-base sm:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed font-normal">
+        No Dockerfile. No YAML to debug. No cloud console clicks. FusionHost inspects your source code, auto-provisions PostgreSQL, builds an optimized container, and keeps your app running.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+        <a href="http://localhost:3000/dashboard" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-brand-500 to-accent-teal hover:from-brand-600 hover:to-accent-teal text-slate-950 font-bold px-7 py-3.5 rounded-xl shadow-xl shadow-brand-500/20 transition-all hover:scale-105">
+          <span>Deploy on FusionHost Free</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+          </svg>
+        </a>
+
+        <a href="#agent-protocol" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-white/10 px-6 py-3.5 rounded-xl font-medium text-sm transition-colors">
+          <svg class="w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          <span>Connect via MCP (Claude / Cursor)</span>
+        </a>
+      </div>
+
+      <!-- Live Speed & Reliability Counters -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto border border-white/[0.08] bg-slate-900/60 rounded-2xl p-4 sm:p-6 backdrop-blur-md text-left">
+        <div class="border-r border-white/5 pr-4">
+          <span class="text-[11px] font-mono text-slate-500 uppercase">Code Analysis</span>
+          <div class="text-2xl font-extrabold text-white mt-0.5">&lt; 1.2s</div>
+          <span class="text-[11px] text-brand-400">100% deterministic</span>
+        </div>
+        <div class="border-r border-white/5 pr-4">
+          <span class="text-[11px] font-mono text-slate-500 uppercase">Container Build</span>
+          <div class="text-2xl font-extrabold text-white mt-0.5">&lt; 20s</div>
+          <span class="text-[11px] text-brand-400">Multi-stage cache</span>
+        </div>
+        <div class="border-r border-white/5 pr-4">
+          <span class="text-[11px] font-mono text-slate-500 uppercase">Cold-Start Wake</span>
+          <div class="text-2xl font-extrabold text-white mt-0.5">~1.8s</div>
+          <span class="text-[11px] text-accent-cyan">Scale-to-zero idle</span>
+        </div>
+        <div>
+          <span class="text-[11px] font-mono text-slate-500 uppercase">Instant Rollback</span>
+          <div class="text-2xl font-extrabold text-white mt-0.5">&lt; 4s</div>
+          <span class="text-[11px] text-brand-400">Pre-built image tags</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 3. SOCIAL PROOF (LOGO CLOUD) ==================== -->
+  <section class="border-y border-white/[0.06] bg-slate-950 py-10 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto text-center">
+      <p class="text-xs font-mono uppercase tracking-widest text-slate-500 mb-6 font-semibold">
+        Tested and operated natively by top AI coding agents &amp; frameworks
+      </p>
+      <div class="flex flex-wrap items-center justify-center gap-8 sm:gap-14 opacity-60 grayscale hover:grayscale-0 transition-all duration-300 text-sm font-bold text-slate-400">
+        <span class="flex items-center gap-2 hover:text-white transition-colors">
+          <svg class="w-5 h-5 text-brand-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          Claude Code
+        </span>
+        <span class="flex items-center gap-2 hover:text-white transition-colors">
+          <svg class="w-5 h-5 text-accent-cyan" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-2h2v2zm0-4H9V7h2v5z"/></svg>
+          Cursor IDE
+        </span>
+        <span class="flex items-center gap-2 hover:text-white transition-colors">
+          <svg class="w-5 h-5 text-accent-teal" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v16H4z"/></svg>
+          Windsurf
+        </span>
+        <span class="flex items-center gap-2 hover:text-white transition-colors">
+          <svg class="w-5 h-5 text-indigo-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          GitHub Actions
+        </span>
+        <span class="flex items-center gap-2 hover:text-white transition-colors">
+          <svg class="w-5 h-5 text-emerald-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L1 21h22L12 2zm0 3.8L19.2 19H4.8L12 5.8z"/></svg>
+          Next.js 15
+        </span>
+        <span class="flex items-center gap-2 hover:text-white transition-colors">
+          <svg class="w-5 h-5 text-cyan-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 1010 10A10 10 0 0012 2zm0 18a8 8 0 118-8 8 8 0 01-8 8z"/></svg>
+          FastAPI
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 4. INTERACTIVE APP SPEC SANDBOX ==================== -->
+  <section id="sandbox" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <div class="text-center max-w-3xl mx-auto mb-12">
+      <span class="text-xs font-mono uppercase tracking-wider text-brand-400 font-semibold">
+        Deterministic Code Analysis Engine
+      </span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-2">
+        See exactly what FusionHost infers
+      </h2>
+      <p class="text-slate-400 mt-2 text-sm sm:text-base">
+        Select a sample stack below. Notice how every single decision cites the exact file and line number.
+      </p>
+    </div>
+
+    <!-- Interactive Container Box -->
+    <div class="bg-slate-900/90 border border-white/10 rounded-2xl p-6 sm:p-8 shadow-2xl">
+      <!-- Stack Presets Bar -->
+      <div class="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-white/[0.08]">
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="switchPreset('nextjs')" id="btn-nextjs" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold border bg-brand-500/10 border-brand-500 text-brand-400">
+            Next.js 15 + Prisma (Postgres)
+          </button>
+          <button onclick="switchPreset('fastapi')" id="btn-fastapi" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold border bg-slate-800 border-white/10 text-slate-400 hover:text-white">
+            FastAPI + asyncpg (Postgres)
+          </button>
+          <button onclick="switchPreset('express')" id="btn-express" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold border bg-slate-800 border-white/10 text-slate-400 hover:text-white">
+            Express + SQLite (Hazard Warning)
+          </button>
+        </div>
+        <div class="flex items-center gap-2 text-xs font-mono text-emerald-400">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          Engine latency: 1.1ms
+        </div>
+      </div>
+
+      <!-- Two-column interactive view -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
+        <!-- Left: Code manifest preview -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="flex items-center justify-between text-xs font-mono text-slate-400">
+            <span class="flex items-center gap-1.5 font-semibold text-slate-300">
+              <svg class="w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              Repository Manifest
+            </span>
+            <span class="text-[11px] text-emerald-400">Zero Dockerfile</span>
+          </div>
+          <div class="bg-slate-950 rounded-xl border border-white/[0.08] p-4 overflow-x-auto text-xs font-mono text-slate-300">
+            <pre id="manifest-content"><code>{
+  "name": "acme-saas-web",
+  "scripts": {
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "^15.1.0",
+    "react": "^19.0.0",
+    "@prisma/client": "^6.2.0"
+  }
+}</code></pre>
+          </div>
+          <div class="p-3 bg-slate-800/40 rounded-lg border border-white/5 text-[11px] text-slate-400">
+            💡 No config files are committed to your repo. Analysis happens in-memory via AST parsers.
+          </div>
+        </div>
+
+        <!-- Right: Inferred App Spec & Tabs -->
+        <div class="lg:col-span-7 bg-slate-950 rounded-xl border border-white/[0.08] overflow-hidden flex flex-col">
+          <!-- Sub Tabs -->
+          <div class="flex items-center border-b border-white/[0.08] bg-slate-900/60 px-2">
+            <button onclick="switchTab('spec')" id="tab-btn-spec" class="px-4 py-2.5 text-xs font-semibold border-b-2 border-brand-500 text-brand-400">
+              App Spec
+            </button>
+            <button onclick="switchTab('citations')" id="tab-btn-citations" class="px-4 py-2.5 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-white">
+              File Citations
+            </button>
+            <button onclick="switchTab('hazards')" id="tab-btn-hazards" class="px-4 py-2.5 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-white">
+              Hazards (<span id="hazard-count">0</span>)
+            </button>
+            <button onclick="switchTab('dockerfile')" id="tab-btn-dockerfile" class="px-4 py-2.5 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-white">
+              Synthetic Container
+            </button>
+          </div>
+
+          <!-- Tab 1: App Spec -->
+          <div id="tab-spec" class="p-5 space-y-4">
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div class="p-3 bg-slate-900 rounded-lg border border-white/5">
+                <span class="text-[10px] uppercase font-mono text-slate-500">Framework</span>
+                <p id="spec-framework" class="text-sm font-bold text-white mt-0.5">Next.js 15</p>
+              </div>
+              <div class="p-3 bg-slate-900 rounded-lg border border-white/5">
+                <span class="text-[10px] uppercase font-mono text-slate-500">Runtime</span>
+                <p id="spec-runtime" class="text-sm font-bold text-white mt-0.5">Node.js 22 LTS</p>
+              </div>
+              <div class="p-3 bg-slate-900 rounded-lg border border-white/5">
+                <span class="text-[10px] uppercase font-mono text-slate-500">Inferred Port</span>
+                <p id="spec-port" class="text-sm font-bold text-brand-400 font-mono mt-0.5">:3000</p>
+              </div>
+            </div>
+
+            <div class="p-3 bg-slate-900 rounded-lg border border-white/5 space-y-2 text-xs">
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">Start Command:</span>
+                <code id="spec-start" class="text-brand-400 font-mono bg-slate-950 px-2 py-0.5 rounded">npm start</code>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">PostgreSQL Auto-Provisioning:</span>
+                <span id="spec-db" class="text-emerald-400 font-semibold">YES (Auto-created database &amp; user)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 2: File Citations -->
+          <div id="tab-citations" class="p-5 space-y-2 hidden">
+            <p class="text-xs text-slate-400 mb-2">Every setting traces back to verifiable lines:</p>
+            <div id="citations-list" class="space-y-2 text-xs font-mono">
+              <!-- populated by JS -->
+            </div>
+          </div>
+
+          <!-- Tab 3: Hazards -->
+          <div id="tab-hazards" class="p-5 space-y-3 hidden">
+            <div id="hazards-list">
+              <!-- populated by JS -->
+            </div>
+          </div>
+
+          <!-- Tab 4: Synthetic Dockerfile -->
+          <div id="tab-dockerfile" class="p-5 space-y-2 hidden">
+            <div class="flex items-center justify-between text-[11px] font-mono text-slate-400">
+              <span>Generated in-memory by FusionHost</span>
+              <span class="text-accent-cyan">Multi-Stage Non-Root</span>
+            </div>
+            <pre class="bg-slate-900 p-3 rounded-lg border border-white/5 text-[11px] font-mono text-accent-cyan overflow-x-auto"><code id="dockerfile-code">FROM node:22-bookworm-slim AS base
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --omit=dev
+COPY . .
+RUN npm run build
+EXPOSE 3000
+USER node
+CMD ["npm", "start"]</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 5. FEATURES BENTO GRID (RENDER.COM STYLE) ==================== -->
+  <section id="features" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <span class="text-xs font-mono uppercase tracking-wider text-brand-400 font-semibold">
+        Engineered for Speed &amp; Simplicity
+      </span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-2">
+        Modern PaaS without the Ops Tax
+      </h2>
+      <p class="text-slate-400 mt-2 text-sm sm:text-base">
+        Everything you need to go from an agent's code generation to a live, production-grade URL.
+      </p>
+    </div>
+
+    <!-- Bento Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      
+      <!-- Card 1: Large Bento Item -->
+      <div class="md:col-span-2 rounded-2xl bg-slate-900 border border-white/[0.08] p-8 card-border transition-all flex flex-col justify-between">
+        <div>
+          <div class="w-10 h-10 rounded-xl bg-brand-500/10 border border-brand-500/30 text-brand-400 flex items-center justify-center mb-5">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-2">Zero-Config Multi-Stage Container Packaging</h3>
+          <p class="text-sm text-slate-400 leading-relaxed max-w-lg mb-6">
+            Buildpacks without the slow build overhead. FusionHost synthesizes an optimized container with non-root security privileges, dependency caching, and clean layers.
+          </p>
+        </div>
+        <div class="bg-slate-950 p-4 rounded-xl border border-white/5 font-mono text-xs text-slate-300">
+          <div class="flex items-center gap-2 text-brand-400 mb-2">
+            <span class="w-2 h-2 rounded-full bg-brand-400"></span>
+            Automatic Container Synthesis
+          </div>
+          <code class="text-slate-400 block">&gt; Detected Node.js 22 LTS with Next.js 15</code>
+          <code class="text-emerald-400 block">&gt; Container built in 18.4s with 0 bytes committed to repo</code>
+        </div>
+      </div>
+
+      <!-- Card 2: Automatic Postgres -->
+      <div class="rounded-2xl bg-slate-900 border border-white/[0.08] p-8 card-border transition-all flex flex-col justify-between">
+        <div>
+          <div class="w-10 h-10 rounded-xl bg-accent-cyan/10 border border-accent-cyan/30 text-accent-cyan flex items-center justify-center mb-5">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/></svg>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-2">Auto-Provisioned PostgreSQL</h3>
+          <p class="text-xs text-slate-400 leading-relaxed mb-6">
+            When your code imports pg, Prisma, or asyncpg, a dedicated database is created automatically and DATABASE_URL is injected seamlessly.
+          </p>
+        </div>
+        <div class="text-[11px] font-mono text-accent-cyan bg-accent-cyan/10 border border-accent-cyan/20 p-2.5 rounded-lg">
+          DATABASE_URL=postgres://...
+        </div>
+      </div>
+
+      <!-- Card 3: Instant Rollback -->
+      <div class="rounded-2xl bg-slate-900 border border-white/[0.08] p-8 card-border transition-all flex flex-col justify-between">
+        <div>
+          <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400 flex items-center justify-center mb-5">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-2">Instant Rollback &lt; 4 Seconds</h3>
+          <p class="text-xs text-slate-400 leading-relaxed mb-6">
+            Every successful release image is preserved. If a deployment fails or crashes, revert to a past build with a single click or agent tool call.
+          </p>
+        </div>
+        <div class="text-[11px] font-mono text-purple-300 bg-purple-500/10 border border-purple-500/20 p-2.5 rounded-lg">
+          Switch active image tag in 1.4s
+        </div>
+      </div>
+
+      <!-- Card 4: Scale-to-Zero -->
+      <div class="md:col-span-2 rounded-2xl bg-slate-900 border border-white/[0.08] p-8 card-border transition-all flex flex-col justify-between">
+        <div>
+          <div class="w-10 h-10 rounded-xl bg-accent-teal/10 border border-accent-teal/30 text-accent-teal flex items-center justify-center mb-5">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h3 class="text-xl font-bold text-white mb-2">Scale-to-Zero with 1.8s Cold-Start Awakening</h3>
+          <p class="text-sm text-slate-400 leading-relaxed max-w-lg mb-6">
+            Idle applications sleep after 10 minutes of inactivity, saving compute and keeping side projects completely free. When an HTTP visitor arrives, the reverse proxy holds the request, wakes the container, and streams the response without dropped connections.
+          </p>
+        </div>
+        <div class="grid grid-cols-2 gap-4 text-xs font-mono">
+          <div class="bg-slate-950 p-3 rounded-lg border border-white/5">
+            <span class="text-slate-500 block text-[10px]">Idle State</span>
+            <span class="text-white font-bold">0% CPU / 0 MB Memory</span>
+          </div>
+          <div class="bg-slate-950 p-3 rounded-lg border border-white/5">
+            <span class="text-slate-500 block text-[10px]">Wake Latency</span>
+            <span class="text-brand-400 font-bold">~1.8s Response</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== 6. AGENT PROTOCOL & MCP (DIFFERENTIATOR) ==================== -->
+  <section id="agent-protocol" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/[0.06]">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      <div class="lg:col-span-6 space-y-6">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-brand-500/30 bg-brand-500/10 text-xs font-semibold text-brand-400">
+          Model Context Protocol (MCP)
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
+          Built for agents to deploy, inspect, and self-heal.
+        </h2>
+        <p class="text-sm sm:text-base text-slate-400 leading-relaxed">
+          Traditional clouds force humans to copy-paste error logs from browser tabs back into their coding agent. FusionHost exposes a native MCP server and single-file <code class="text-white font-mono bg-slate-800 px-1.5 py-0.5 rounded">agent.md</code> instructions.
+        </p>
+        <ul class="space-y-3 text-xs sm:text-sm text-slate-300">
+          <li class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-brand-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            Agent inspects AppSpec and hazards before shipping.
+          </li>
+          <li class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-brand-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            Build failure? Agent reads logs autonomously, fixes code, and redeploys.
+          </li>
+          <li class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-brand-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            No human intervention or manual log relay required.
+          </li>
+        </ul>
+        <div>
+          <a href="http://localhost:3000/api/agent-md" target="_blank" class="inline-flex items-center gap-1.5 text-xs text-brand-400 font-mono hover:underline">
+            Inspect raw agent.md guide &rarr;
+          </a>
+        </div>
+      </div>
+
+      <!-- Agent Terminal Box -->
+      <div class="lg:col-span-6 bg-slate-900 border border-white/10 rounded-2xl p-6 shadow-2xl font-mono text-xs">
+        <div class="flex items-center justify-between pb-3 mb-4 border-b border-white/[0.08]">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-rose-500/80"></span>
+            <span class="w-3 h-3 rounded-full bg-amber-500/80"></span>
+            <span class="w-3 h-3 rounded-full bg-emerald-500/80"></span>
+            <span class="text-slate-400 ml-2 text-[11px]">Claude Code / Cursor Autonomous Loop</span>
+          </div>
+          <span class="text-[10px] text-emerald-400">MCP ACTIVE</span>
+        </div>
+        <div class="space-y-2 text-slate-300 leading-relaxed">
+          <p class="text-slate-500">&gt; agent.callTool("analyze_repository", { path: "." })</p>
+          <p class="text-cyan-400">✓ AppSpec: Node.js 22 LTS, Next.js 15, Port: 3000</p>
+          <p class="text-cyan-400">✓ Inferred database: PostgreSQL needed (cited in package.json#pg)</p>
+          <p class="text-slate-500 mt-3">&gt; agent.callTool("deploy_app", { app_name: "acme-saas" })</p>
+          <p class="text-emerald-400 font-bold">🚀 Container live at http://acme-saas.localhost:4000</p>
+          <p class="text-emerald-400">✓ Auto-provisioned database: fusionhost_acme_saas</p>
+          <p class="text-slate-400 mt-2 text-[11px] italic">Agent verified live health check in 12s without human relay.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 7. EXPLICIT PLATFORM CONSTRAINTS ==================== -->
+  <section id="limitations" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <div class="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-8 sm:p-12">
+      <div class="flex items-center gap-2 text-amber-400 font-semibold text-xs uppercase tracking-wider mb-3">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        Radical Honesty — Explicit Constraints
+      </div>
+      <h3 class="text-2xl sm:text-3xl font-bold text-white mb-4">
+        Where FusionHost Stops (Published Transparently)
+      </h3>
+      <p class="text-sm text-slate-300 max-w-2xl mb-8 leading-relaxed">
+        A short, honest limitations list beats a long feature list nobody trusts. Here are our intentional architectural non-goals:
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+        <div class="p-4 rounded-xl bg-slate-900 border border-white/5 space-y-1">
+          <strong class="text-white block font-semibold">1. Single Instance Per App</strong>
+          <span class="text-slate-400">One container per app. No distributed load balancer pools.</span>
+        </div>
+        <div class="p-4 rounded-xl bg-slate-900 border border-white/5 space-y-1">
+          <strong class="text-white block font-semibold">2. PostgreSQL Only</strong>
+          <span class="text-slate-400">No managed Redis or MongoDB. Pass external credentials via env vars.</span>
+        </div>
+        <div class="p-4 rounded-xl bg-slate-900 border border-white/5 space-y-1">
+          <strong class="text-white block font-semibold">3. Ephemeral Local Disk</strong>
+          <span class="text-slate-400">Local disk is wiped on redeploy. Store files in S3 or database.</span>
+        </div>
+      </div>
+
+      <div class="mt-8 flex items-center justify-between">
+        <a href="http://localhost:3000/limitations" class="inline-flex items-center gap-1.5 text-xs text-amber-300 font-semibold hover:underline">
+          Read full 6 constraints &rarr;
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 8. PRICING SECTION ==================== -->
+  <section id="pricing" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/[0.06]">
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <span class="text-xs font-mono uppercase tracking-wider text-brand-400 font-semibold">
+        Transparent Pricing
+      </span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-2">
+        Failure is Always Free
+      </h2>
+      <p class="text-slate-400 mt-2 text-sm sm:text-base">
+        Failed deploys and static sites never count against your limits or wallet balance.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- Free -->
+      <div class="rounded-2xl bg-slate-900/60 border border-white/10 p-8 flex flex-col justify-between">
+        <div>
+          <h3 class="text-xl font-bold text-white mb-1">Free</h3>
+          <p class="text-xs text-slate-400 mb-6">For indie hackers and testing agents.</p>
+          <div class="text-4xl font-extrabold text-white mb-6">₹0 <span class="text-xs text-slate-400 font-normal">/ forever</span></div>
+          <ul class="space-y-3 text-xs text-slate-300 mb-8">
+            <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Unlimited static sites</li>
+            <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> 2 live server applications</li>
+            <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> 10 successful deploys/mo</li>
+            <li class="flex items-center gap-2 font-semibold text-brand-400"><span class="text-emerald-400">✓</span> Failed deploys cost ₹0</li>
+            <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> 1 PostgreSQL database</li>
+          </ul>
+        </div>
+        <a href="http://localhost:3000/dashboard" class="w-full py-2.5 rounded-lg text-center text-xs font-bold bg-slate-800 hover:bg-slate-700 text-white transition-colors">
+          Start Free
+        </a>
+      </div>
+
+      <!-- Pro -->
+      <div class="rounded-2xl bg-slate-900 border border-brand-500 p-8 flex flex-col justify-between relative shadow-xl shadow-brand-500/10">
+        <span class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r from-brand-500 to-accent-teal text-slate-950 font-bold text-[10px] uppercase tracking-wider rounded-full shadow-md">
+          Most Popular
+        </span>
+        <div>
+          <h3 class="text-xl font-bold text-white mb-1">Pro</h3>
+          <p class="text-xs text-slate-400 mb-6">For production apps and fast-shipping startups.</p>
+          <div class="text-4xl font-extrabold text-white mb-6">₹1,500 <span class="text-xs text-slate-400 font-normal">/ month</span></div>
+          <ul class="space-y-3 text-xs text-slate-300 mb-8">
+            <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> 15 live server applications</li>
+            <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Unlimited successful deploys (Priority)</li>
+            <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> 5 custom domains with auto-SSL</li>
+            <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> 3 PostgreSQL databases</li>
+            <li class="flex items-center gap-2 font-semibold text-accent-cyan"><span class="text-emerald-400">✓</span> Monthly AI Gateway credit included</li>
+          </ul>
+        </div>
+        <a href="http://localhost:3000/dashboard" class="w-full py-2.5 rounded-lg text-center text-xs font-bold bg-brand-500 hover:bg-brand-600 text-slate-950 transition-colors shadow-md">
+          Upgrade to Pro
+        </a>
+      </div>
+
+      <!-- Enterprise -->
+      <div class="rounded-2xl bg-slate-900/60 border border-white/10 p-8 flex flex-col justify-between">
+        <div>
+          <h3 class="text-xl font-bold text-white mb-1">Enterprise</h3>
+          <p class="text-xs text-slate-400 mb-6">For dedicated compute and compliance SLAs.</p>
+          <div class="text-4xl font-extrabold text-white mb-6">Custom <span class="text-xs text-slate-400 font-normal">/ invoiced</span></div>
+          <ul class="space-y-3 text-xs text-slate-300 mb-8">
+            <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Unlimited apps &amp; containers</li>
+            <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Dedicated single-tenant infrastructure</li>
+            <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> 99.95% uptime SLA guarantee</li>
+            <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Dedicated Slack channel support</li>
+          </ul>
+        </div>
+        <a href="mailto:sales@fusionhost.local" class="w-full py-2.5 rounded-lg text-center text-xs font-bold bg-slate-800 hover:bg-slate-700 text-white transition-colors">
+          Contact Sales
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 9. FOOTER ==================== -->
+  <footer class="border-t border-white/[0.08] bg-slate-950 mt-20 text-slate-400 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-8 mb-8">
+        <div class="col-span-2">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-6 h-6 rounded bg-brand-500/20 text-brand-400 flex items-center justify-center font-black">
+              ⚡
+            </div>
+            <span class="font-bold text-sm text-white">FusionHost</span>
+          </div>
+          <p className="text-slate-400 max-w-sm mb-4 leading-relaxed">
+            "Tell your agent once, ship your app." Zero Dockerfile, zero CI/CD YAML, zero cloud consoles.
+          </p>
+          <div class="flex items-center gap-2 text-emerald-400 font-mono text-[11px]">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            All Platform Services Operational
+          </div>
+        </div>
+        <div>
+          <h4 class="font-semibold text-slate-200 text-sm mb-3">Product</h4>
+          <ul class="space-y-2">
+            <li><a href="#sandbox" class="hover:text-white transition-colors">App Spec Sandbox</a></li>
+            <li><a href="http://localhost:3000/dashboard" class="hover:text-white transition-colors">Management Console</a></li>
+            <li><a href="#limitations" class="hover:text-white transition-colors">Where It Stops</a></li>
+            <li><a href="#pricing" class="hover:text-white transition-colors">Pricing &amp; Limits</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-semibold text-slate-200 text-sm mb-3">Agents</h4>
+          <ul class="space-y-2">
+            <li><a href="http://localhost:3000/api/agent-md" target="_blank" class="hover:text-white transition-colors">agent.md Guide</a></li>
+            <li><a href="#agent-protocol" class="hover:text-white transition-colors">MCP Quickstart</a></li>
+            <li><a href="http://localhost:3000/compare" class="hover:text-white transition-colors">Compare vs Competitors</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-semibold text-slate-200 text-sm mb-3">Platform</h4>
+          <ul class="space-y-2">
+            <li class="text-slate-500">PostgreSQL Auto-Provisioning</li>
+            <li class="text-slate-500">Scale-to-Zero Compute</li>
+            <li class="text-slate-500">Instant Rollback</li>
+            <li class="text-slate-500">Failed Deploys Cost ₹0</li>
+          </ul>
+        </div>
+      </div>
+      <div class="pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-500">
+        <p>&copy; 2026 FusionHost. Inspired by developer-first simplicity.</p>
+        <div class="flex items-center gap-4">
+          <a href="#" class="hover:text-slate-400">Privacy</a>
+          <a href="#" class="hover:text-slate-400">Terms</a>
+          <a href="#" class="hover:text-slate-400">Security</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== INTERACTIVE JAVASCRIPT ==================== -->
+  <script>
+    const PRESETS = {
+      nextjs: {
+        manifest: `{\n  "name": "acme-saas-web",\n  "scripts": {\n    "build": "next build",\n    "start": "next start"\n  },\n  "dependencies": {\n    "next": "^15.1.0",\n    "react": "^19.0.0",\n    "@prisma/client": "^6.2.0"\n  }\n}`,
+        framework: 'Next.js 15',
+        runtime: 'Node.js 22 LTS',
+        port: ':3000',
+        start: 'npm start',
+        db: 'YES (Auto-created database & user)',
+        citations: [
+          { key: 'framework', val: 'package.json#dependencies.next' },
+          { key: 'startCommand', val: 'package.json#scripts.start' },
+          { key: 'buildCommand', val: 'package.json#scripts.build' },
+          { key: 'needsPostgres', val: 'prisma/schema.prisma#provider="postgresql"' },
+          { key: 'port', val: 'Next.js standard (:3000)' }
+        ],
+        hazards: [],
+        dockerfile: `FROM node:22-bookworm-slim AS base\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci --omit=dev\nCOPY . .\nRUN npm run build\nEXPOSE 3000\nUSER node\nCMD ["npm", "start"]`
+      },
+      fastapi: {
+        manifest: `fastapi==0.115.0\nuvicorn[standard]==0.32.0\nasyncpg==0.30.0\npydantic==2.10.0`,
+        framework: 'FastAPI',
+        runtime: 'Python 3.12',
+        port: ':8000',
+        start: 'uvicorn main:app --host 0.0.0.0 --port 8000',
+        db: 'YES (Auto-created database & user)',
+        citations: [
+          { key: 'framework', val: 'requirements.txt (fastapi)' },
+          { key: 'startCommand', val: 'inferred FastAPI entrypoint (uvicorn main:app)' },
+          { key: 'needsPostgres', val: 'requirements.txt contains asyncpg' },
+          { key: 'port', val: 'FastAPI standard (:8000)' }
+        ],
+        hazards: [],
+        dockerfile: `FROM python:3.12-slim AS base\nWORKDIR /app\nCOPY requirements.txt* ./\nRUN pip install --no-cache-dir -r requirements.txt\nCOPY . .\nEXPOSE 8000\nCMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]`
+      },
+      express: {
+        manifest: `{\n  "name": "legacy-catalog-api",\n  "scripts": { "start": "node server.js" },\n  "dependencies": {\n    "express": "^4.21.0",\n    "sqlite3": "^5.1.7"\n  }\n}`,
+        framework: 'Express',
+        runtime: 'Node.js 22 LTS',
+        port: ':3000',
+        start: 'node server.js',
+        db: 'NO (SQLite detected as hazard)',
+        citations: [
+          { key: 'framework', val: 'package.json#dependencies.express' },
+          { key: 'startCommand', val: 'package.json#scripts.start' },
+          { key: 'port', val: 'server.js#listen(3000)' }
+        ],
+        hazards: [
+          { title: 'ephemeral-disk-write', msg: 'Local filesystem write detected: fs.writeFileSync("audit.log"). Local disk is ephemeral by design and will be wiped on redeploy.' },
+          { title: 'ephemeral-disk-write', msg: 'SQLite dependency detected (sqlite3). Local disk is wiped on container restart. Use PostgreSQL to prevent data loss.' }
+        ],
+        dockerfile: `FROM node:22-bookworm-slim AS base\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci --omit=dev\nCOPY . .\nEXPOSE 3000\nUSER node\nCMD ["node", "server.js"]`
+      }
+    };
+
+    let currentPreset = 'nextjs';
+
+    function renderPreset() {
+      const data = PRESETS[currentPreset];
+      document.getElementById('manifest-content').innerHTML = `<code>${escapeHtml(data.manifest)}</code>`;
+      document.getElementById('spec-framework').textContent = data.framework;
+      document.getElementById('spec-runtime').textContent = data.runtime;
+      document.getElementById('spec-port').textContent = data.port;
+      document.getElementById('spec-start').textContent = data.start;
+      document.getElementById('spec-db').textContent = data.db;
+
+      // Citations
+      const citList = document.getElementById('citations-list');
+      citList.innerHTML = data.citations.map(c => `
+        <div class="p-2.5 rounded-lg bg-slate-900 border border-white/5 flex items-center justify-between">
+          <span class="text-slate-400 capitalize">${c.key}</span>
+          <span class="text-brand-400 bg-brand-500/10 px-2 py-0.5 rounded text-[11px]">${c.val}</span>
+        </div>
+      `).join('');
+
+      // Hazards
+      document.getElementById('hazard-count').textContent = data.hazards.length;
+      const hazList = document.getElementById('hazards-list');
+      if (data.hazards.length === 0) {
+        hazList.innerHTML = `
+          <div class="text-center py-6 text-xs text-slate-400">
+            <span class="text-2xl block mb-2">✓</span>
+            <p class="text-white font-semibold">Zero Hazards Detected</p>
+            <p class="text-slate-500 mt-1">No ephemeral disk writes or missing secrets found.</p>
+          </div>
+        `;
+      } else {
+        hazList.innerHTML = data.hazards.map(h => `
+          <div class="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg text-xs space-y-1">
+            <div class="font-bold text-amber-400 flex items-center gap-1.5">⚠️ ${h.title}</div>
+            <div class="text-slate-300">${h.msg}</div>
+          </div>
+        `).join('');
+      }
+
+      // Dockerfile
+      document.getElementById('dockerfile-code').textContent = data.dockerfile;
+    }
+
+    function switchPreset(key) {
+      currentPreset = key;
+      ['nextjs', 'fastapi', 'express'].forEach(k => {
+        const btn = document.getElementById(`btn-${k}`);
+        if (k === key) {
+          btn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold border bg-brand-500/10 border-brand-500 text-brand-400';
+        } else {
+          btn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold border bg-slate-800 border-white/10 text-slate-400 hover:text-white';
+        }
+      });
+      renderPreset();
+    }
+
+    function switchTab(tabKey) {
+      ['spec', 'citations', 'hazards', 'dockerfile'].forEach(k => {
+        const tab = document.getElementById(`tab-${k}`);
+        const btn = document.getElementById(`tab-btn-${k}`);
+        if (k === tabKey) {
+          tab.classList.remove('hidden');
+          btn.className = 'px-4 py-2.5 text-xs font-semibold border-b-2 border-brand-500 text-brand-400';
+        } else {
+          tab.classList.add('hidden');
+          btn.className = 'px-4 py-2.5 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-white';
+        }
+      });
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    // Initialize
+    renderPreset();
+  </script>
+</body>
+</html>
