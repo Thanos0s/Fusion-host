@@ -1,0 +1,23 @@
+{
+  "name": "@fusionhost/mcp",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "fusionhost-mcp": "./dist/bin/fusionhost-mcp.js"
+  },
+  "scripts": {
+    "build": "tsc && node -e \"if(process.platform!=='win32'){require('fs').chmodSync('dist/bin/fusionhost-mcp.js', 0o755)}\"",
+    "test": "node --test test/mcp.test.ts"
+  },
+  "dependencies": {
+    "@fusionhost/types": "*",
+    "@fusionhost/engine": "*",
+    "@modelcontextprotocol/sdk": "^1.30.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}
