@@ -1,0 +1,56 @@
+{
+  "apps": [
+    {
+      "id": "fde86edb-720d-4bab-b457-67b3722eb925",
+      "name": "api-test-service",
+      "sourcePath": "C:\\Users\\kidss\\AppData\\Local\\Temp\\fusionhost-api-test-OTWoKq",
+      "status": "FAILED",
+      "liveUrl": "http://localhost:4000/live/api-test-service",
+      "port": 3000,
+      "needsPostgres": false,
+      "createdAt": "2026-09-22T05:19:32.385Z",
+      "updatedAt": "2026-09-22T05:19:33.108Z",
+      "activeDeploymentId": "741c66bd"
+    }
+  ],
+  "deployments": [
+    {
+      "id": "741c66bd",
+      "appId": "fde86edb-720d-4bab-b457-67b3722eb925",
+      "appName": "api-test-service",
+      "status": "FAILED",
+      "imageTag": "fusionhost/api-test-service:741c66bd",
+      "port": 5315,
+      "internalPort": 3000,
+      "envVars": {},
+      "appSpec": {
+        "appName": "api-test-service",
+        "runtime": "node",
+        "version": "22",
+        "framework": "Node.js (Standard)",
+        "startCommand": "npm start",
+        "port": 3000,
+        "needsPostgres": false,
+        "hasExistingDockerfile": false,
+        "requiredEnvVars": [],
+        "citations": {
+          "manifest": "package.json",
+          "appName": "package.json#name",
+          "version": "default (Node.js 22 LTS)",
+          "framework": "inferred from package.json",
+          "startCommand": "package.json#scripts.start",
+          "port": "framework default (3000)"
+        },
+        "hazards": []
+      },
+      "logs": [
+        "[10:49:32 am] [Analysis] Runtime: node | Framework: Node.js (Standard) | Port: 3000",
+        "[10:49:33 am] [Analysis] Start command: npm start",
+        "[10:49:33 am] [Build] Preparing synthetic container build context...",
+        "[10:49:33 am] [Fatal Error] Deploy failed: ENOENT: no such file or directory, open 'C:\\Users\\kidss\\AppData\\Local\\Temp\\fusionhost-api-test-OTWoKq\\.fusionhost.Dockerfile'"
+      ],
+      "createdAt": "2026-09-22T05:19:32.385Z",
+      "updatedAt": "2026-09-22T05:19:33.108Z"
+    }
+  ]
+}
