@@ -1,0 +1,21 @@
+{
+  "name": "fusionhost-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "FusionHost — Platform-as-a-Service for AI Coding Agents and Humans",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:web": "npm --workspace=@fusionhost/web run dev",
+    "dev:control-plane": "npm --workspace=@fusionhost/control-plane run dev",
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "mcp": "node packages/mcp/dist/bin/fusionhost-mcp.js"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.0",
+    "typescript": "^5.7.3"
+  }
+}
