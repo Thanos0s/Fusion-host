@@ -9,10 +9,7 @@ import {
   Terminal,
   FileCheck,
   KeyRound,
-  Database,
   Globe,
-  CheckCircle2,
-  Clock,
   Layers,
 } from 'lucide-react';
 import type { AppRecord, Deployment, AppSpec } from '@fusionhost/types';
@@ -118,7 +115,6 @@ export default function AppDetailPage({
   const [logs, setLogs] = useState<string[]>(deployments[0]?.logs || []);
 
   const handleRollback = async (targetDeployId: string) => {
-    // Revert active release
     const target = deployments.find((d) => d.id === targetDeployId);
     if (!target) return;
 
@@ -145,107 +141,159 @@ export default function AppDetailPage({
     ]);
   };
 
+  const tabs = [
+    { id: 'preview', label: 'Live Preview', icon: Globe },
+    { id: 'logs', label: 'Terminal Logs', icon: Terminal },
+    { id: 'spec', label: 'App Spec & Citations', icon: FileCheck },
+    { id: 'deployments', label: `Deployments (${deployments.length})`, icon: RotateCcw },
+    { id: 'secrets', label: 'Secrets & Postgres', icon: KeyRound },
+  ] as const;
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div style={{ maxWidth: 1280, margin: '0 auto', padding: '40px 20px' }}>
       {/* Back button & App Header */}
-      <div className="mb-6">
+      <div style={{ marginBottom: 28 }}>
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-white transition-colors mb-4"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            fontSize: 12,
+            color: 'rgba(255,255,255,0.45)',
+            textDecoration: 'none',
+            marginBottom: 16,
+            transition: 'color 0.15s',
+          }}
+          onMouseOver={(e) => (e.currentTarget.style.color = '#fff')}
+          onMouseOut={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}
         >
-          <ArrowLeft className="w-3.5 h-3.5" />
+          <ArrowLeft style={{ width: 14, height: 14 }} />
           Back to Applications
         </Link>
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-accent-cyan flex items-center justify-center text-slate-950 font-bold shadow-lg shadow-primary/20">
-              <Layers className="w-6 h-6" />
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div
+              style={{
+                width: 48,
+                height: 48,
+                borderRadius: 10,
+                background: 'rgba(124,58,237,0.15)',
+                border: '1px solid rgba(124,58,237,0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#8b5cf6',
+              }}
+            >
+              <Layers style={{ width: 24, height: 24 }} />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-bold text-white tracking-tight">{app.name}</h1>
-                <span className="text-[10px] font-bold font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <h1 style={{ fontSize: 24, fontWeight: 700, margin: 0, color: '#fff', letterSpacing: '-0.02em' }}>
+                  {app.name}
+                </h1>
+                <span
+                  style={{
+                    fontSize: 10,
+                    fontFamily: 'monospace',
+                    fontWeight: 700,
+                    padding: '3px 8px',
+                    borderRadius: 99,
+                    background: 'rgba(34,197,94,0.1)',
+                    color: '#22c55e',
+                    border: '1px solid rgba(34,197,94,0.3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 5,
+                  }}
+                >
+                  <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#22c55e', display: 'inline-block' }} />
                   {app.status}
                 </span>
               </div>
-              <p className="text-xs text-slate-400 font-mono mt-0.5">{app.sourcePath}</p>
+              <p style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.35)', fontFamily: 'monospace', margin: '4px 0 0' }}>
+                {app.sourcePath}
+              </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <a
               href={app.liveUrl}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1.5 bg-surface-elevated hover:bg-slate-700 text-slate-200 border border-border px-3.5 py-2 rounded-lg text-xs font-semibold transition-colors"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                background: '#111',
+                color: '#fff',
+                border: '1px solid rgba(255,255,255,0.14)',
+                padding: '8px 14px',
+                borderRadius: 6,
+                fontSize: 12.5,
+                fontWeight: 600,
+                textDecoration: 'none',
+                transition: 'all 0.15s',
+              }}
+              onMouseOver={(e) => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)')}
+              onMouseOut={(e) => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.14)')}
             >
-              <Globe className="w-3.5 h-3.5 text-primary" />
+              <Globe style={{ width: 14, height: 14, color: '#8b5cf6' }} />
               Open Live App
-              <ExternalLink className="w-3 h-3 text-slate-400" />
+              <ExternalLink style={{ width: 12, height: 12, color: 'rgba(255,255,255,0.4)' }} />
             </a>
           </div>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center border-b border-border/70 mb-8 space-x-1 overflow-x-auto">
-        <button
-          onClick={() => setActiveTab('preview')}
-          className={`px-4 py-2.5 text-xs font-semibold border-b-2 transition-colors flex items-center gap-1.5 ${
-            activeTab === 'preview'
-              ? 'border-primary text-primary'
-              : 'border-transparent text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          <Globe className="w-3.5 h-3.5" />
-          Live Preview
-        </button>
-        <button
-          onClick={() => setActiveTab('logs')}
-          className={`px-4 py-2.5 text-xs font-semibold border-b-2 transition-colors flex items-center gap-1.5 ${
-            activeTab === 'logs'
-              ? 'border-primary text-primary'
-              : 'border-transparent text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          <Terminal className="w-3.5 h-3.5" />
-          Terminal Logs
-        </button>
-        <button
-          onClick={() => setActiveTab('spec')}
-          className={`px-4 py-2.5 text-xs font-semibold border-b-2 transition-colors flex items-center gap-1.5 ${
-            activeTab === 'spec'
-              ? 'border-primary text-primary'
-              : 'border-transparent text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          <FileCheck className="w-3.5 h-3.5" />
-          App Spec &amp; Citations
-        </button>
-        <button
-          onClick={() => setActiveTab('deployments')}
-          className={`px-4 py-2.5 text-xs font-semibold border-b-2 transition-colors flex items-center gap-1.5 ${
-            activeTab === 'deployments'
-              ? 'border-primary text-primary'
-              : 'border-transparent text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          <RotateCcw className="w-3.5 h-3.5" />
-          Deployments &amp; Rollback ({deployments.length})
-        </button>
-        <button
-          onClick={() => setActiveTab('secrets')}
-          className={`px-4 py-2.5 text-xs font-semibold border-b-2 transition-colors flex items-center gap-1.5 ${
-            activeTab === 'secrets'
-              ? 'border-primary text-primary'
-              : 'border-transparent text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          <KeyRound className="w-3.5 h-3.5" />
-          Secrets &amp; Postgres
-        </button>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          borderBottom: '1px solid rgba(255,255,255,0.08)',
+          marginBottom: 32,
+          gap: 6,
+          overflowX: 'auto',
+        }}
+      >
+        {tabs.map((t) => {
+          const Icon = t.icon;
+          const isActive = activeTab === t.id;
+          return (
+            <button
+              key={t.id}
+              onClick={() => setActiveTab(t.id as any)}
+              style={{
+                padding: '10px 16px',
+                fontSize: 12.5,
+                fontWeight: 600,
+                background: 'none',
+                border: 'none',
+                borderBottom: isActive ? '2px solid #7c3aed' : '2px solid transparent',
+                color: isActive ? '#fff' : 'rgba(255,255,255,0.45)',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                transition: 'color 0.15s',
+                whiteSpace: 'nowrap',
+              }}
+              onMouseOver={(e) => {
+                if (!isActive) e.currentTarget.style.color = '#fff';
+              }}
+              onMouseOut={(e) => {
+                if (!isActive) e.currentTarget.style.color = 'rgba(255,255,255,0.45)';
+              }}
+            >
+              <Icon style={{ width: 14, height: 14, color: isActive ? '#8b5cf6' : 'currentColor' }} />
+              {t.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* Tab Panels */}

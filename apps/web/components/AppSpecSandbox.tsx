@@ -2,8 +2,6 @@
 
 import { useState } from 'react';
 import {
-  Code,
-  ShieldAlert,
   Database,
   Terminal,
   FileCheck,
@@ -11,8 +9,6 @@ import {
   AlertTriangle,
   FileCode,
   Zap,
-  Layers,
-  ArrowRight,
 } from 'lucide-react';
 import type { AppSpec } from '@fusionhost/types';
 
@@ -238,185 +234,182 @@ export default function AppSpecSandbox() {
   const [activeTab, setActiveTab] = useState<'spec' | 'citations' | 'hazards' | 'dockerfile'>('spec');
 
   return (
-    <div className="w-full bg-surface border border-border/70 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-2xl">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-border/60">
+    <div style={{ width: '100%', background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14, padding: 28 }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 16, paddingBottom: 24, borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="w-2 h-2 rounded-full bg-accent-cyan animate-pulse" />
-            <span className="text-xs font-mono uppercase tracking-wider text-accent-cyan font-semibold">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#8b5cf6', display: 'inline-block' }} />
+            <span style={{ fontSize: 10.5, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#8b5cf6', fontWeight: 600 }}>
               Live Code Analysis Engine Demo
             </span>
           </div>
-          <h3 className="text-xl font-bold text-white tracking-tight">
+          <h3 style={{ fontSize: 20, fontWeight: 700, color: '#fff', margin: 0, letterSpacing: '-0.02em' }}>
             Deterministic App Spec Inspector
           </h3>
-          <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
+          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', margin: '4px 0 0' }}>
             Every conclusion traces directly to a specific line in your repository. No guessing.
           </p>
         </div>
 
         {/* Preset Selector */}
-        <div className="flex flex-wrap items-center gap-2">
-          {PRESETS.map((p) => (
-            <button
-              key={p.id}
-              onClick={() => setSelectedPreset(p)}
-              className={`text-xs px-3 py-1.5 rounded-lg border font-medium transition-all ${
-                selectedPreset.id === p.id
-                  ? 'bg-primary/10 border-primary text-primary shadow-sm shadow-primary/20'
-                  : 'bg-surface-elevated border-border/60 text-slate-400 hover:text-slate-200 hover:border-slate-600'
-              }`}
-            >
-              {p.name}
-            </button>
-          ))}
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
+          {PRESETS.map((p) => {
+            const isSelected = selectedPreset.id === p.id;
+            return (
+              <button
+                key={p.id}
+                onClick={() => setSelectedPreset(p)}
+                style={{
+                  fontSize: 12,
+                  padding: '7px 12px',
+                  borderRadius: 6,
+                  border: isSelected ? '1px solid #7c3aed' : '1px solid rgba(255,255,255,0.1)',
+                  background: isSelected ? 'rgba(124,58,237,0.15)' : '#000',
+                  color: isSelected ? '#fff' : 'rgba(255,255,255,0.5)',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                }}
+              >
+                {p.name}
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* Grid: Code input view vs Inferred Spec */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 20, marginTop: 24 }}>
         {/* Left Column: Source Manifest */}
-        <div className="lg:col-span-5 flex flex-col space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase text-slate-400 font-mono flex items-center gap-1.5">
-              <FileCode className="w-3.5 h-3.5 text-primary" />
+        <div style={{ gridColumn: 'span 5', display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)', fontFamily: 'monospace', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <FileCode style={{ width: 14, height: 14, color: '#8b5cf6' }} />
               Source Manifest in Repo
             </span>
-            <span className="text-[11px] text-slate-500 font-mono">
+            <span style={{ fontSize: 10.5, color: 'rgba(255,255,255,0.3)', fontFamily: 'monospace' }}>
               Zero Dockerfile Required
             </span>
           </div>
 
-          <div className="space-y-3">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {Object.entries(selectedPreset.files).map(([filename, content]) => (
               <div
                 key={filename}
-                className="bg-background/90 rounded-xl border border-border/60 overflow-hidden"
+                style={{ background: '#000', borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden' }}
               >
-                <div className="px-3 py-1.5 bg-surface-elevated/70 border-b border-border/40 flex items-center justify-between text-[11px] font-mono text-slate-400">
+                <div style={{ padding: '6px 12px', background: '#111', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 11, fontFamily: 'monospace', color: 'rgba(255,255,255,0.45)' }}>
                   <span>{filename}</span>
-                  <span className="text-emerald-400">Scanned</span>
+                  <span style={{ color: '#22c55e' }}>Scanned</span>
                 </div>
-                <pre className="p-3 text-[11px] font-mono text-slate-300 overflow-x-auto leading-relaxed max-h-48">
+                <pre style={{ padding: 12, fontSize: 11, fontFamily: 'monospace', color: 'rgba(255,255,255,0.7)', overflowX: 'auto', lineHeight: 1.6, margin: 0, maxHeight: 180 }}>
                   <code>{content}</code>
                 </pre>
               </div>
             ))}
           </div>
 
-          <div className="p-3 rounded-lg bg-surface-elevated/40 border border-border/40 text-xs text-slate-400">
-            <p className="flex items-center gap-1.5 font-medium text-slate-300">
-              <Zap className="w-3.5 h-3.5 text-primary" />
-              Engine Analysis Time: <span className="text-emerald-400 font-mono">1.2ms</span>
+          <div style={{ padding: 12, borderRadius: 8, background: '#111', border: '1px solid rgba(255,255,255,0.06)', fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>
+            <p style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600, color: 'rgba(255,255,255,0.7)', margin: 0 }}>
+              <Zap style={{ width: 14, height: 14, color: '#8b5cf6' }} />
+              Engine Analysis Time: <span style={{ color: '#22c55e', fontFamily: 'monospace' }}>1.2ms</span>
             </p>
-            <p className="text-[11px] text-slate-500 mt-1">
+            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', margin: '4px 0 0' }}>
               Static analysis runs directly in the MCP tool or CLI without uploading code to any cloud service.
             </p>
           </div>
         </div>
 
         {/* Right Column: Inferred App Spec and Tabs */}
-        <div className="lg:col-span-7 flex flex-col bg-background/90 rounded-xl border border-border/70 overflow-hidden">
+        <div style={{ gridColumn: 'span 7', display: 'flex', flexDirection: 'column', background: '#000', borderRadius: 10, border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden' }}>
           {/* Tabs */}
-          <div className="flex items-center border-b border-border/60 bg-surface-elevated/60 px-2 overflow-x-auto">
-            <button
-              onClick={() => setActiveTab('spec')}
-              className={`px-3 py-2 text-xs font-medium border-b-2 transition-colors flex items-center gap-1.5 ${
-                activeTab === 'spec'
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <FileCheck className="w-3.5 h-3.5" />
-              App Spec
-            </button>
-            <button
-              onClick={() => setActiveTab('citations')}
-              className={`px-3 py-2 text-xs font-medium border-b-2 transition-colors flex items-center gap-1.5 ${
-                activeTab === 'citations'
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-              File Citations ({Object.keys(selectedPreset.spec.citations).length})
-            </button>
-            <button
-              onClick={() => setActiveTab('hazards')}
-              className={`px-3 py-2 text-xs font-medium border-b-2 transition-colors flex items-center gap-1.5 ${
-                activeTab === 'hazards'
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <AlertTriangle
-                className={`w-3.5 h-3.5 ${
-                  selectedPreset.spec.hazards.length > 0 ? 'text-amber-400' : 'text-slate-500'
-                }`}
-              />
-              Hazards ({selectedPreset.spec.hazards.length})
-            </button>
-            <button
-              onClick={() => setActiveTab('dockerfile')}
-              className={`px-3 py-2 text-xs font-medium border-b-2 transition-colors flex items-center gap-1.5 ${
-                activeTab === 'dockerfile'
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <Terminal className="w-3.5 h-3.5 text-cyan-400" />
-              Synthetic Container
-            </button>
+          <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.08)', background: '#0d0d0d', padding: '0 8px', overflowX: 'auto' }}>
+            {[
+              { id: 'spec', label: 'App Spec', icon: FileCheck },
+              { id: 'citations', label: `File Citations (${Object.keys(selectedPreset.spec.citations).length})`, icon: CheckCircle2 },
+              { id: 'hazards', label: `Hazards (${selectedPreset.spec.hazards.length})`, icon: AlertTriangle },
+              { id: 'dockerfile', label: 'Synthetic Container', icon: Terminal },
+            ].map((t) => {
+              const Icon = t.icon;
+              const isActive = activeTab === t.id;
+              return (
+                <button
+                  key={t.id}
+                  onClick={() => setActiveTab(t.id as any)}
+                  style={{
+                    padding: '10px 14px',
+                    fontSize: 12,
+                    fontWeight: 600,
+                    background: 'none',
+                    border: 'none',
+                    borderBottom: isActive ? '2px solid #7c3aed' : '2px solid transparent',
+                    color: isActive ? '#fff' : 'rgba(255,255,255,0.45)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  <Icon style={{ width: 13, height: 13, color: isActive ? '#8b5cf6' : 'currentColor' }} />
+                  {t.label}
+                </button>
+              );
+            })}
           </div>
 
           {/* Tab Contents */}
-          <div className="p-4 flex-1 overflow-y-auto max-h-[380px]">
+          <div style={{ padding: 16, flex: 1, overflowY: 'auto', maxHeight: 380 }}>
             {activeTab === 'spec' && (
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  <div className="p-3 bg-surface rounded-lg border border-border/40">
-                    <span className="text-[10px] uppercase font-mono text-slate-500">Framework</span>
-                    <p className="text-sm font-semibold text-white mt-0.5">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+                  <div style={{ padding: 12, background: '#0d0d0d', borderRadius: 8, border: '1px solid rgba(255,255,255,0.06)' }}>
+                    <span style={{ fontSize: 10, textTransform: 'uppercase', fontFamily: 'monospace', color: 'rgba(255,255,255,0.35)' }}>Framework</span>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: '#fff', margin: '4px 0 0' }}>
                       {selectedPreset.spec.framework}
                     </p>
                   </div>
-                  <div className="p-3 bg-surface rounded-lg border border-border/40">
-                    <span className="text-[10px] uppercase font-mono text-slate-500">Runtime</span>
-                    <p className="text-sm font-semibold text-white mt-0.5 capitalize">
+                  <div style={{ padding: 12, background: '#0d0d0d', borderRadius: 8, border: '1px solid rgba(255,255,255,0.06)' }}>
+                    <span style={{ fontSize: 10, textTransform: 'uppercase', fontFamily: 'monospace', color: 'rgba(255,255,255,0.35)' }}>Runtime</span>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: '#fff', margin: '4px 0 0', textTransform: 'capitalize' }}>
                       {selectedPreset.spec.runtime} v{selectedPreset.spec.version}
                     </p>
                   </div>
-                  <div className="p-3 bg-surface rounded-lg border border-border/40">
-                    <span className="text-[10px] uppercase font-mono text-slate-500">Port Inferred</span>
-                    <p className="text-sm font-semibold text-primary font-mono mt-0.5">
+                  <div style={{ padding: 12, background: '#0d0d0d', borderRadius: 8, border: '1px solid rgba(255,255,255,0.06)' }}>
+                    <span style={{ fontSize: 10, textTransform: 'uppercase', fontFamily: 'monospace', color: 'rgba(255,255,255,0.35)' }}>Port Inferred</span>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: '#8b5cf6', fontFamily: 'monospace', margin: '4px 0 0' }}>
                       :{selectedPreset.spec.port}
                     </p>
                   </div>
                 </div>
 
-                <div className="p-3 bg-surface rounded-lg border border-border/40 space-y-2 text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-400">Start Command:</span>
-                    <code className="bg-background px-2 py-0.5 rounded text-emerald-400 font-mono">
+                <div style={{ padding: 14, background: '#0d0d0d', borderRadius: 8, border: '1px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column', gap: 8, fontSize: 12 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ color: 'rgba(255,255,255,0.45)' }}>Start Command:</span>
+                    <code style={{ background: '#000', padding: '2px 8px', borderRadius: 4, color: '#22c55e', fontFamily: 'monospace' }}>
                       {selectedPreset.spec.startCommand}
                     </code>
                   </div>
                   {selectedPreset.spec.buildCommand && (
-                    <div className="flex items-center justify-between">
-                      <span className="text-slate-400">Build Command:</span>
-                      <code className="bg-background px-2 py-0.5 rounded text-cyan-400 font-mono">
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span style={{ color: 'rgba(255,255,255,0.45)' }}>Build Command:</span>
+                      <code style={{ background: '#000', padding: '2px 8px', borderRadius: 4, color: '#8b5cf6', fontFamily: 'monospace' }}>
                         {selectedPreset.spec.buildCommand}
                       </code>
                     </div>
                   )}
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-400">Auto PostgreSQL Provisioning:</span>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ color: 'rgba(255,255,255,0.45)' }}>Auto PostgreSQL Provisioning:</span>
                     <span
-                      className={`font-semibold flex items-center gap-1 ${
-                        selectedPreset.spec.needsPostgres ? 'text-emerald-400' : 'text-slate-400'
-                      }`}
+                      style={{
+                        fontWeight: 600,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 4,
+                        color: selectedPreset.spec.needsPostgres ? '#22c55e' : 'rgba(255,255,255,0.4)',
+                      }}
                     >
-                      <Database className="w-3.5 h-3.5" />
+                      <Database style={{ width: 14, height: 14 }} />
                       {selectedPreset.spec.needsPostgres ? 'YES (Auto-created)' : 'NO'}
                     </span>
                   </div>
@@ -425,17 +418,26 @@ export default function AppSpecSandbox() {
             )}
 
             {activeTab === 'citations' && (
-              <div className="space-y-2">
-                <p className="text-xs text-slate-400 mb-3">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', margin: '0 0 4px' }}>
                   FusionHost deterministically grounds every infrastructure setting in code:
                 </p>
                 {Object.entries(selectedPreset.spec.citations).map(([key, source]) => (
                   <div
                     key={key}
-                    className="p-2.5 rounded-lg bg-surface border border-border/40 flex items-center justify-between text-xs"
+                    style={{
+                      padding: '10px 12px',
+                      borderRadius: 6,
+                      background: '#0d0d0d',
+                      border: '1px solid rgba(255,255,255,0.06)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      fontSize: 12,
+                    }}
                   >
-                    <span className="font-mono text-slate-300 capitalize">{key}</span>
-                    <span className="font-mono text-primary bg-primary/10 px-2 py-0.5 rounded text-[11px]">
+                    <span style={{ fontFamily: 'monospace', color: 'rgba(255,255,255,0.5)', textTransform: 'capitalize' }}>{key}</span>
+                    <span style={{ fontFamily: 'monospace', color: '#8b5cf6', background: 'rgba(139,92,246,0.1)', padding: '2px 8px', borderRadius: 4, fontSize: 11 }}>
                       {source}
                     </span>
                   </div>
@@ -444,12 +446,12 @@ export default function AppSpecSandbox() {
             )}
 
             {activeTab === 'hazards' && (
-              <div className="space-y-3">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {selectedPreset.spec.hazards.length === 0 ? (
-                  <div className="p-6 text-center text-xs text-slate-400">
-                    <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto mb-2 opacity-80" />
-                    <p className="text-slate-200 font-medium">No Infrastructure Hazards Detected</p>
-                    <p className="text-slate-500 mt-1">
+                  <div style={{ padding: 24, textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
+                    <CheckCircle2 style={{ width: 32, height: 32, color: '#22c55e', margin: '0 auto 8px', opacity: 0.8 }} />
+                    <p style={{ color: '#fff', fontWeight: 600, margin: '0 0 4px' }}>No Infrastructure Hazards Detected</p>
+                    <p style={{ color: 'rgba(255,255,255,0.35)', margin: 0 }}>
                       This repository has zero ephemeral disk writes and zero missing secrets. Safe to ship!
                     </p>
                   </div>
@@ -457,22 +459,22 @@ export default function AppSpecSandbox() {
                   selectedPreset.spec.hazards.map((h, i) => (
                     <div
                       key={i}
-                      className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg text-xs space-y-1.5"
+                      style={{ padding: 12, background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.2)', borderRadius: 8, fontSize: 12, display: 'flex', flexDirection: 'column', gap: 6 }}
                     >
-                      <div className="flex items-center justify-between">
-                        <span className="font-semibold text-amber-400 flex items-center gap-1.5">
-                          <AlertTriangle className="w-3.5 h-3.5" />
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <span style={{ fontWeight: 600, color: '#fbbf24', display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <AlertTriangle style={{ width: 14, height: 14 }} />
                           {h.ruleId}
                         </span>
                         {h.fileCitation && (
-                          <span className="font-mono text-[10px] text-slate-400">
+                          <span style={{ fontFamily: 'monospace', fontSize: 10, color: 'rgba(255,255,255,0.35)' }}>
                             {h.fileCitation}
                           </span>
                         )}
                       </div>
-                      <p className="text-slate-300">{h.message}</p>
+                      <p style={{ color: 'rgba(255,255,255,0.7)', margin: 0 }}>{h.message}</p>
                       {h.suggestion && (
-                        <p className="text-amber-200/80 text-[11px] italic">
+                        <p style={{ color: 'rgba(251,191,36,0.8)', fontSize: 11, fontStyle: 'italic', margin: 0 }}>
                           Tip: {h.suggestion}
                         </p>
                       )}
@@ -483,12 +485,12 @@ export default function AppSpecSandbox() {
             )}
 
             {activeTab === 'dockerfile' && (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-[11px] text-slate-400 font-mono">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 11, color: 'rgba(255,255,255,0.35)', fontFamily: 'monospace' }}>
                   <span>Generated by FusionHost Build Service</span>
-                  <span className="text-cyan-400">Multi-Stage Non-Root</span>
+                  <span style={{ color: '#8b5cf6' }}>Multi-Stage Non-Root</span>
                 </div>
-                <pre className="p-3 bg-background rounded-lg border border-border/40 text-[11px] font-mono text-cyan-300 overflow-x-auto leading-relaxed">
+                <pre style={{ padding: 12, background: '#0d0d0d', borderRadius: 8, border: '1px solid rgba(255,255,255,0.06)', fontSize: 11, fontFamily: 'monospace', color: '#8b5cf6', overflowX: 'auto', lineHeight: 1.6, margin: 0 }}>
                   <code>{selectedPreset.dockerfile}</code>
                 </pre>
               </div>

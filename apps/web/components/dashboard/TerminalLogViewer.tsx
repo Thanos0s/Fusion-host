@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Terminal, Play, Pause, Trash2, Search, ArrowDown } from 'lucide-react';
+import { Terminal, Search, ArrowDown } from 'lucide-react';
 
 interface TerminalLogViewerProps {
   logs: string[];
@@ -29,77 +29,127 @@ export default function TerminalLogViewer({
   }, [logs, autoScroll]);
 
   return (
-    <div className="rounded-xl border border-border/70 bg-background flex flex-col h-[460px] overflow-hidden shadow-inner font-mono text-xs">
+    <div
+      style={{
+        borderRadius: 12,
+        border: '1px solid rgba(255,255,255,0.08)',
+        background: '#050505',
+        display: 'flex',
+        flexDirection: 'column',
+        height: 480,
+        overflow: 'hidden',
+        fontFamily: 'monospace',
+        fontSize: 12,
+      }}
+    >
       {/* Terminal Header */}
-      <div className="px-4 py-2.5 bg-surface-elevated/80 border-b border-border/50 flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 mr-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block" />
+      <div
+        style={{
+          padding: '10px 16px',
+          background: '#0d0d0d',
+          borderBottom: '1px solid rgba(255,255,255,0.08)',
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 8,
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#ef4444', display: 'inline-block', opacity: 0.8 }} />
+            <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#eab308', display: 'inline-block', opacity: 0.8 }} />
+            <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#22c55e', display: 'inline-block', opacity: 0.8 }} />
           </div>
-          <Terminal className="w-3.5 h-3.5 text-primary" />
-          <span className="text-slate-300 font-semibold text-[11px]">
+          <Terminal style={{ width: 14, height: 14, color: '#8b5cf6' }} />
+          <span style={{ color: 'rgba(255,255,255,0.7)', fontWeight: 600, fontSize: 11.5 }}>
             Live Container &amp; Build Logs {deploymentId ? `(${deploymentId})` : ''}
           </span>
           {isLive && (
-            <span className="flex items-center gap-1 text-[10px] text-emerald-400 font-semibold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 5,
+                fontSize: 10,
+                color: '#22c55e',
+                fontWeight: 700,
+                background: 'rgba(34,197,94,0.1)',
+                padding: '2px 8px',
+                borderRadius: 4,
+                border: '1px solid rgba(34,197,94,0.25)',
+              }}
+            >
+              <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#22c55e', display: 'inline-block' }} />
               STREAMING
             </span>
           )}
         </div>
 
-        <div className="flex items-center gap-2 text-[11px]">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11 }}>
           {/* Search bar */}
-          <div className="relative">
-            <Search className="w-3 h-3 absolute left-2 top-1/2 -translate-y-1/2 text-slate-500" />
+          <div style={{ position: 'relative' }}>
+            <Search style={{ width: 12, height: 12, position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.35)' }} />
             <input
               type="text"
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
               placeholder="Filter logs..."
-              className="bg-surface border border-border/60 rounded px-2 pl-6 py-1 text-[11px] text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-primary w-32 sm:w-44"
+              style={{
+                background: '#000',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 4,
+                padding: '4px 8px 4px 26px',
+                fontSize: 11,
+                color: '#fff',
+                outline: 'none',
+                width: 150,
+              }}
             />
           </div>
 
           <button
             onClick={() => setAutoScroll(!autoScroll)}
-            className={`p-1.5 rounded border transition-colors ${
-              autoScroll
-                ? 'bg-primary/10 border-primary text-primary'
-                : 'bg-surface border-border text-slate-400 hover:text-white'
-            }`}
+            style={{
+              padding: '5px 8px',
+              borderRadius: 4,
+              border: autoScroll ? '1px solid #7c3aed' : '1px solid rgba(255,255,255,0.1)',
+              background: autoScroll ? 'rgba(124,58,237,0.15)' : 'transparent',
+              color: autoScroll ? '#8b5cf6' : 'rgba(255,255,255,0.4)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+            }}
             title={autoScroll ? 'Auto-scroll enabled' : 'Auto-scroll paused'}
           >
-            <ArrowDown className="w-3 h-3" />
+            <ArrowDown style={{ width: 12, height: 12 }} />
           </button>
         </div>
       </div>
 
       {/* Terminal Body */}
-      <div className="flex-1 p-4 overflow-y-auto space-y-1 select-text">
+      <div style={{ flex: 1, padding: 16, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 4, userSelect: 'text' }}>
         {filteredLogs.length === 0 ? (
-          <div className="h-full flex items-center justify-center text-slate-600 italic">
+          <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.3)', fontStyle: 'italic' }}>
             Waiting for deployment logs...
           </div>
         ) : (
           filteredLogs.map((log, index) => {
-            let color = 'text-slate-300';
+            let color = 'rgba(255,255,255,0.7)';
             if (log.includes('[Fatal Error]') || log.includes('[Docker Error]') || log.includes('[CRASHED]') || log.includes('stderr')) {
-              color = 'text-rose-400';
+              color = '#f43f5e';
             } else if (log.includes('[Hazard') || log.includes('[Warning]')) {
-              color = 'text-amber-400';
+              color = '#fbbf24';
             } else if (log.includes('[Health Check]') || log.includes('[Release Ready]') || log.includes('HEALTHY')) {
-              color = 'text-emerald-400';
+              color = '#22c55e';
             } else if (log.includes('[Build]') || log.includes('[Docker Build]')) {
-              color = 'text-cyan-300';
+              color = '#8b5cf6';
             } else if (log.includes('[Provisioning]')) {
-              color = 'text-purple-300';
+              color = '#a78bfa';
             }
 
             return (
-              <div key={index} className={`leading-relaxed whitespace-pre-wrap break-all ${color}`}>
+              <div key={index} style={{ lineHeight: 1.6, whiteSpace: 'pre-wrap', wordBreak: 'break-all', color }}>
                 {log}
               </div>
             );

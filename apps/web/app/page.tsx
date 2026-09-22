@@ -1,205 +1,561 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
-  Sparkles,
-  Terminal,
-  Cpu,
-  Database,
   ArrowRight,
-  GitBranch,
-  FolderUp,
-  RotateCcw,
+  Database,
+  Terminal,
   Zap,
-  ShieldCheck,
+  RotateCcw,
+  Clock,
   Check,
   AlertTriangle,
-  Layers,
 } from 'lucide-react';
 import AppSpecSandbox from '@/components/AppSpecSandbox';
 
+const phrases = ['agents=', 'data=', 'startups=', 'builders=', 'apps=', 'scale='];
+
 export default function HomePage() {
+  const [typedText, setTypedText] = useState('agents=');
+
+  useEffect(() => {
+    let pi = 0;
+    let ci = 0;
+    let del = false;
+    let pause = false;
+    let timer: NodeJS.Timeout;
+
+    function tick() {
+      if (pause) {
+        timer = setTimeout(() => {
+          pause = false;
+          tick();
+        }, 1400);
+        return;
+      }
+      const cur = phrases[pi];
+      if (!del) {
+        ci++;
+        setTypedText(cur.slice(0, ci));
+        if (ci === cur.length) {
+          pause = true;
+          del = true;
+        }
+        timer = setTimeout(tick, del && !pause ? 55 : 85);
+      } else {
+        ci--;
+        setTypedText(cur.slice(0, ci));
+        if (ci === 0) {
+          del = false;
+          pi = (pi + 1) % phrases.length;
+        }
+        timer = setTimeout(tick, 48);
+      }
+    }
+
+    timer = setTimeout(tick, 900);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <div className="flex flex-col items-center">
-      {/* Hero Section */}
-      <section className="w-full pt-16 pb-20 md:pt-24 md:pb-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center relative overflow-hidden">
+    <div style={{ background: '#000', color: '#fff', overflowX: 'hidden' }}>
+      {/* HERO SECTION */}
+      <section
+        style={{
+          position: 'relative',
+          overflow: 'hidden',
+          minHeight: 'calc(100vh - 100px)',
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
         {/* Glow backdrop */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-primary/10 blur-[130px] -z-10 rounded-full pointer-events-none" />
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'radial-gradient(ellipse 65% 55% at 72% 42%, rgba(109,40,217,0.28) 0%, rgba(76,29,149,0.12) 50%, transparent 82%)',
+            pointerEvents: 'none',
+            zIndex: 0,
+          }}
+        />
 
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-xs font-semibold text-primary mb-8 shadow-sm">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>Platform-as-a-Service for the AI Agent Era</span>
-        </div>
+        <div style={{ position: 'relative', zIndex: 1, maxWidth: 1280, margin: '0 auto', padding: '60px 20px 48px', width: '100%' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 64, alignItems: 'center' }}>
+            {/* Left Column */}
+            <div>
+              <h1
+                style={{
+                  fontSize: 'clamp(46px, 5.5vw, 68px)',
+                  fontWeight: 700,
+                  lineHeight: 1.08,
+                  letterSpacing: '-0.025em',
+                  color: '#fff',
+                  margin: '0 0 24px',
+                }}
+              >
+                Your fastest path to
+                <br />
+                production for
+                <br />
+                <span style={{ color: '#8b5cf6' }}>{typedText}</span>
+                <span
+                  style={{
+                    display: 'inline-block',
+                    width: 3,
+                    height: '0.82em',
+                    background: '#8b5cf6',
+                    marginLeft: 3,
+                    verticalAlign: 'middle',
+                    animation: 'blink 1s step-end infinite',
+                  }}
+                />
+              </h1>
 
-        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white max-w-4xl mx-auto leading-[1.1] mb-6">
-          "Tell your agent once,{' '}
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent-cyan to-accent-emerald">
-            ship your app
-          </span>
-          "
-        </h1>
+              <p style={{ fontSize: 17, lineHeight: 1.68, color: 'rgba(255,255,255,0.5)', margin: '0 0 36px', maxWidth: 480 }}>
+                Intuitive infrastructure to scale any app or agent from your first user to your billionth.
+              </p>
 
-        <p className="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed font-normal">
-          No Dockerfile. No CI/CD YAML. No cloud console clicks. FusionHost inspects your code, provisions PostgreSQL automatically, builds a secure container, and keeps it running.
-        </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14 }}>
+                <Link
+                  href="/dashboard"
+                  style={{
+                    background: 'transparent',
+                    border: '1.5px solid rgba(255,255,255,0.52)',
+                    color: '#fff',
+                    padding: '11px 24px',
+                    borderRadius: 6,
+                    fontSize: 14,
+                    fontWeight: 600,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    textDecoration: 'none',
+                    transition: 'all 0.15s',
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.06)';
+                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.85)';
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.52)';
+                  }}
+                >
+                  Start for free
+                  <ArrowRight style={{ width: 15, height: 15 }} />
+                </Link>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-          <Link
-            href="/dashboard"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-accent-cyan hover:from-primary-hover hover:to-accent-cyan text-slate-950 font-bold px-6 py-3.5 rounded-xl shadow-lg shadow-primary/20 transition-all hover:scale-[1.02]"
-          >
-            Launch Console Dashboard
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-          <Link
-            href="/docs"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-surface hover:bg-surface-elevated text-slate-200 border border-border px-6 py-3.5 rounded-xl font-medium transition-colors"
-          >
-            <Terminal className="w-4 h-4 text-emerald-400" />
-            Install MCP for Claude / Cursor
-          </Link>
-        </div>
+                <Link
+                  href="/pricing"
+                  style={{
+                    background: 'transparent',
+                    border: '1.5px solid rgba(255,255,255,0.17)',
+                    color: 'rgba(255,255,255,0.6)',
+                    padding: '11px 24px',
+                    borderRadius: 6,
+                    fontSize: 14,
+                    fontWeight: 500,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    textDecoration: 'none',
+                    transition: 'all 0.15s',
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.color = '#fff';
+                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)';
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
+                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.17)';
+                  }}
+                >
+                  Talk to sales
+                </Link>
+              </div>
+            </div>
 
-        {/* Live Timings & Benchmarks */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto border border-border/60 bg-surface/50 rounded-2xl p-4 sm:p-6 backdrop-blur-sm">
-          <div className="text-left border-r border-border/40 pr-4 last:border-0">
-            <span className="text-[11px] font-mono text-slate-500 uppercase">Code Analysis</span>
-            <p className="text-2xl font-bold text-white mt-0.5">&lt; 1.5s</p>
-            <span className="text-[11px] text-emerald-400">100% deterministic</span>
-          </div>
-          <div className="text-left border-r border-border/40 pr-4 last:border-0">
-            <span className="text-[11px] font-mono text-slate-500 uppercase">Server App Build</span>
-            <p className="text-2xl font-bold text-white mt-0.5">&lt; 22s</p>
-            <span className="text-[11px] text-emerald-400">Multi-stage cache</span>
-          </div>
-          <div className="text-left border-r border-border/40 pr-4 last:border-0">
-            <span className="text-[11px] font-mono text-slate-500 uppercase">Cold-Start Wake</span>
-            <p className="text-2xl font-bold text-white mt-0.5">~1.8s</p>
-            <span className="text-[11px] text-accent-cyan">Scale-to-zero idle</span>
-          </div>
-          <div className="text-left">
-            <span className="text-[11px] font-mono text-slate-500 uppercase">Instant Rollback</span>
-            <p className="text-2xl font-bold text-white mt-0.5">&lt; 4s</p>
-            <span className="text-[11px] text-primary">Pre-built image tag</span>
+            {/* Right: Dashboard Mockup */}
+            <div style={{ position: 'relative' }}>
+              {/* Git push floating card */}
+              <div
+                style={{
+                  position: 'absolute',
+                  left: 8,
+                  top: -12,
+                  zIndex: 20,
+                  padding: '12px 18px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  background: 'rgba(17,17,17,0.96)',
+                  border: '1px solid rgba(255,255,255,0.14)',
+                  borderRadius: 10,
+                  backdropFilter: 'blur(8px)',
+                  boxShadow: '0 20px 60px rgba(0,0,0,0.6)',
+                }}
+              >
+                <span style={{ fontFamily: 'monospace', fontSize: 13, color: 'rgba(255,255,255,0.38)' }}>$</span>
+                <span style={{ fontFamily: 'monospace', fontSize: 13, color: '#fff', fontWeight: 600 }}>git push</span>
+                <span style={{ fontFamily: 'monospace', fontSize: 13, color: 'rgba(255,255,255,0.35)' }}>origin main</span>
+              </div>
+
+              {/* Dashboard panel */}
+              <div
+                style={{
+                  marginTop: 40,
+                  marginLeft: 24,
+                  background: '#0a0a0a',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: 12,
+                  overflow: 'hidden',
+                  boxShadow: '0 32px 80px rgba(0,0,0,0.7)',
+                }}
+              >
+                <div
+                  style={{
+                    padding: '10px 16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    borderBottom: '1px solid rgba(255,255,255,0.07)',
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: 10,
+                      fontFamily: 'monospace',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.18em',
+                      fontWeight: 600,
+                      color: 'rgba(255,255,255,0.28)',
+                    }}
+                  >
+                    Production
+                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e', display: 'inline-block' }} />
+                    <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.28)', fontFamily: 'monospace' }}>live</span>
+                  </div>
+                </div>
+
+                <div style={{ padding: 12, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                  {/* app-backend 1 */}
+                  <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: 10 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                      <span style={{ fontSize: 10.5, fontWeight: 600, color: 'rgba(255,255,255,0.7)' }}>app-backend</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e' }} />
+                        <span style={{ fontSize: 9, color: '#22c55e', fontWeight: 600 }}>Available</span>
+                      </div>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                      <div>
+                        <span style={{ fontSize: 7.5, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.2)' }}>MEMORY</span>
+                        <svg viewBox="0 0 60 18" style={{ width: '100%', display: 'block', marginTop: 2 }} height="16">
+                          <defs>
+                            <linearGradient id="g1_react" x1="0" x2="0" y1="0" y2="1">
+                              <stop offset="0%" stopColor="#7c3aed" stopOpacity="0.4" />
+                              <stop offset="100%" stopColor="#7c3aed" stopOpacity="0" />
+                            </linearGradient>
+                          </defs>
+                          <path d="M0,15 C5,12 8,7 14,9 C20,11 22,5 28,4 C34,3 36,8 42,6 C48,4 52,9 60,7" fill="none" stroke="#7c3aed" strokeWidth="1.5" />
+                          <path d="M0,15 C5,12 8,7 14,9 C20,11 22,5 28,4 C34,3 36,8 42,6 C48,4 52,9 60,7 L60,18 L0,18Z" fill="url(#g1_react)" />
+                        </svg>
+                        <span style={{ fontSize: 7.5, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.2)' }}>INSTANCES</span>
+                      </div>
+                      <div>
+                        <span style={{ fontSize: 7.5, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.2)' }}>CPU</span>
+                        <svg viewBox="0 0 60 18" style={{ width: '100%', display: 'block', marginTop: 2 }} height="16">
+                          <defs>
+                            <linearGradient id="g2_react" x1="0" x2="0" y1="0" y2="1">
+                              <stop offset="0%" stopColor="#6366f1" stopOpacity="0.4" />
+                              <stop offset="100%" stopColor="#6366f1" stopOpacity="0" />
+                            </linearGradient>
+                          </defs>
+                          <path d="M0,13 C4,9 10,15 16,11 C22,7 24,4 30,6 C36,8 38,3 44,5 C50,7 55,11 60,9" fill="none" stroke="#6366f1" strokeWidth="1.5" />
+                          <path d="M0,13 C4,9 10,15 16,11 C22,7 24,4 30,6 C36,8 38,3 44,5 C50,7 55,11 60,9 L60,18 L0,18Z" fill="url(#g2_react)" />
+                        </svg>
+                        <span style={{ fontSize: 7.5, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.2)' }}>REQUESTS</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* app-backend 2 */}
+                  <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: 10 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                      <span style={{ fontSize: 10.5, fontWeight: 600, color: 'rgba(255,255,255,0.7)' }}>app-backend</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e' }} />
+                        <span style={{ fontSize: 9, color: '#22c55e', fontWeight: 600 }}>Available</span>
+                      </div>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                      <div>
+                        <span style={{ fontSize: 7.5, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.2)' }}>MEMORY</span>
+                        <svg viewBox="0 0 60 18" style={{ width: '100%', display: 'block', marginTop: 2 }} height="16">
+                          <path d="M0,11 C6,7 10,13 16,9 C22,5 26,11 32,7 C38,3 42,9 48,5 C52,3 56,7 60,5" fill="none" stroke="#7c3aed" strokeWidth="1.5" />
+                        </svg>
+                        <span style={{ fontSize: 7.5, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.2)' }}>INSTANCES</span>
+                      </div>
+                      <div>
+                        <span style={{ fontSize: 7.5, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.2)' }}>CPU</span>
+                        <svg viewBox="0 0 60 18" style={{ width: '100%', display: 'block', marginTop: 2 }} height="16">
+                          <path d="M0,17 C5,15 8,9 14,11 C20,13 24,7 30,9 C36,11 40,5 46,7 C52,9 56,13 60,11" fill="none" stroke="#6366f1" strokeWidth="1.5" />
+                        </svg>
+                        <span style={{ fontSize: 7.5, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.2)' }}>REQS</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* app-database */}
+                  <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: 10 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                      <span style={{ fontSize: 10.5, fontWeight: 600, color: 'rgba(255,255,255,0.7)' }}>app-database</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e' }} />
+                        <span style={{ fontSize: 9, color: '#22c55e', fontWeight: 600 }}>Available</span>
+                      </div>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                      <div>
+                        <span style={{ fontSize: 7.5, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.2)' }}>MEMORY</span>
+                        <svg viewBox="0 0 60 18" style={{ width: '100%', display: 'block', marginTop: 2 }} height="16">
+                          <path d="M0,9 C8,5 12,13 18,7 C24,1 28,9 34,5 C40,1 44,7 50,3 C54,1 57,5 60,3" fill="none" stroke="#7c3aed" strokeWidth="1.5" />
+                        </svg>
+                        <span style={{ fontSize: 7.5, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.2)' }}>STORAGE</span>
+                      </div>
+                      <div>
+                        <span style={{ fontSize: 7.5, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.2)' }}>CPU</span>
+                        <svg viewBox="0 0 60 18" style={{ width: '100%', display: 'block', marginTop: 2 }} height="16">
+                          <path d="M0,15 C5,11 10,17 16,13 C22,9 26,5 32,7 C38,9 42,3 48,5 C54,7 57,11 60,9" fill="none" stroke="#6366f1" strokeWidth="1.5" />
+                        </svg>
+                        <span style={{ fontSize: 7.5, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.2)' }}>CONNECTIONS</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* app-frontend */}
+                  <div style={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: 10 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                      <span style={{ fontSize: 10.5, fontWeight: 600, color: 'rgba(255,255,255,0.7)' }}>app-frontend</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e' }} />
+                        <span style={{ fontSize: 9, color: '#22c55e', fontWeight: 600 }}>Available</span>
+                      </div>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                      <div>
+                        <span style={{ fontSize: 7.5, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.2)' }}>MEMORY</span>
+                        <svg viewBox="0 0 60 18" style={{ width: '100%', display: 'block', marginTop: 2 }} height="16">
+                          <path d="M0,17 C4,13 8,9 14,11 C20,13 24,7 30,5 C36,3 40,9 46,7 C52,5 56,9 60,7" fill="none" stroke="#7c3aed" strokeWidth="1.5" />
+                        </svg>
+                        <span style={{ fontSize: 7.5, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.2)' }}>BANDWIDTH</span>
+                      </div>
+                      <div>
+                        <span style={{ fontSize: 7.5, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.2)' }}>CPU</span>
+                        <svg viewBox="0 0 60 18" style={{ width: '100%', display: 'block', marginTop: 2 }} height="16">
+                          <path d="M0,13 C6,9 10,15 16,11 C22,7 26,13 32,9 C38,5 42,11 48,7 C54,3 57,7 60,5" fill="none" stroke="#6366f1" strokeWidth="1.5" />
+                        </svg>
+                        <span style={{ fontSize: 7.5, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.2)' }}>REQUESTS</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Interactive App Spec Sandbox */}
-      <section id="sandbox" className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      {/* TRUSTED STRIP */}
+      <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)', borderBottom: '1px solid rgba(255,255,255,0.07)', padding: '18px 0' }}>
+        <p style={{ textAlign: 'center', fontSize: 10.5, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.2em', fontWeight: 600, color: 'rgba(255,255,255,0.22)', margin: 0 }}>
+          Trusted by over 7 million builders
+        </p>
+      </div>
+
+      {/* APP SPEC SANDBOX SECTION */}
+      <section style={{ maxWidth: 1280, margin: '0 auto', padding: '80px 20px' }}>
+        <div style={{ textAlign: 'center', marginBottom: 48 }}>
+          <p style={{ fontSize: 11, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.18em', fontWeight: 600, color: '#8b5cf6', margin: '0 0 12px' }}>Interactive Demo</p>
+          <h2 style={{ fontSize: 36, fontWeight: 700, letterSpacing: '-0.02em', margin: 0 }}>Deterministic In-Memory Analysis</h2>
+          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.42)', marginTop: 8 }}>Test how the engine inspects code and synthesizes containers without committing a Dockerfile.</p>
+        </div>
         <AppSpecSandbox />
       </section>
 
-      {/* Three Ways In Section */}
-      <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <span className="text-xs font-mono uppercase text-primary font-semibold tracking-wider">
-            Ingestion &amp; Deploy Triggers
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-2">
-            "Three Ways In"
-          </h2>
-          <p className="text-slate-400 mt-3 text-sm sm:text-base">
-            Equally engineered for autonomous AI coding agents and hands-on human builders.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Way 1 */}
-          <div className="bg-surface rounded-2xl border border-border/60 p-6 flex flex-col justify-between hover:border-primary/50 transition-colors">
-            <div>
-              <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center text-primary mb-4">
-                <Terminal className="w-5 h-5" />
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2">1. From a Coding Agent</h3>
-              <p className="text-xs text-slate-400 leading-relaxed mb-4">
-                Your agent connects via our official MCP server. It analyzes the repo, reviews hazards, deploys, reads back logs on failure, and iterates autonomously without relaying errors through you.
-              </p>
-            </div>
-            <div className="bg-background rounded-lg p-2.5 font-mono text-[11px] text-primary border border-border/40">
-              npx @fusionhost/mcp
-            </div>
-          </div>
-
-          {/* Way 2 */}
-          <div className="bg-surface rounded-2xl border border-border/60 p-6 flex flex-col justify-between hover:border-accent-cyan/50 transition-colors">
-            <div>
-              <div className="w-10 h-10 rounded-xl bg-accent-cyan/10 border border-accent-cyan/30 flex items-center justify-center text-accent-cyan mb-4">
-                <GitBranch className="w-5 h-5" />
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2">2. From a Git Repository</h3>
-              <p className="text-xs text-slate-400 leading-relaxed mb-4">
-                Connect your GitHub or GitLab repo once. Every push to the default branch packages and releases automatically, with a toggle for instant auto-ship vs. manual confirmation.
-              </p>
-            </div>
-            <div className="bg-background rounded-lg p-2.5 font-mono text-[11px] text-accent-cyan border border-border/40">
-              git push origin main
-            </div>
-          </div>
-
-          {/* Way 3 */}
-          <div className="bg-surface rounded-2xl border border-border/60 p-6 flex flex-col justify-between hover:border-accent-emerald/50 transition-colors">
-            <div>
-              <div className="w-10 h-10 rounded-xl bg-accent-emerald/10 border border-accent-emerald/30 flex items-center justify-center text-accent-emerald mb-4">
-                <FolderUp className="w-5 h-5" />
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2">3. From a Local Folder</h3>
-              <p className="text-xs text-slate-400 leading-relaxed mb-4">
-                No Git commit required. Pick or drag a local directory in the FusionHost web dashboard. The engine analyzes and deploys your local work-in-progress code instantly.
-              </p>
-            </div>
-            <div className="bg-background rounded-lg p-2.5 font-mono text-[11px] text-accent-emerald border border-border/40">
-              Drag &amp; drop to /dashboard
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Radical Honesty / Limitations Teaser */}
-      <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-8 sm:p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div className="max-w-2xl">
-            <div className="flex items-center gap-2 text-amber-400 font-semibold text-xs uppercase tracking-wider mb-2">
-              <AlertTriangle className="w-4 h-4" />
-              Product Principle: Radical Transparency
-            </div>
-            <h3 className="text-2xl font-bold text-white">
-              Say what's out of scope, loudly.
-            </h3>
-            <p className="text-sm text-slate-400 mt-2 leading-relaxed">
-              We publish our limitations right on the front door. FusionHost is single-instance, PostgreSQL-only, with an ephemeral filesystem and scale-to-zero compute. We don't want you discovering our boundaries in production.
+      {/* FEATURES SECTION */}
+      <section id="features" style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '96px 20px' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 64 }}>
+            <p style={{ fontSize: 11, fontFamily: 'monospace', textTransform: 'uppercase', letterSpacing: '0.18em', fontWeight: 600, color: '#8b5cf6', margin: '0 0 12px' }}>Platform</p>
+            <h2 style={{ fontSize: 40, fontWeight: 700, letterSpacing: '-0.02em', margin: 0 }}>Everything you need to ship</h2>
+            <p style={{ fontSize: 16, marginTop: 12, color: 'rgba(255,255,255,0.42)', maxWidth: 500, marginLeft: 'auto', marginRight: 'auto' }}>
+              From first commit to billionth request &mdash; no ops team required.
             </p>
           </div>
-          <Link
-            href="/limitations"
-            className="inline-flex items-center gap-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/40 px-5 py-2.5 rounded-xl font-medium text-sm transition-colors whitespace-nowrap"
-          >
-            Read Explicit Constraints
-            <ArrowRight className="w-4 h-4" />
-          </Link>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 16 }}>
+            {/* Bento Card 1 */}
+            <div style={{ background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 28, gridColumn: 'span 2' }}>
+              <div style={{ width: 36, height: 36, borderRadius: 8, background: 'rgba(124,58,237,0.14)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+                <Zap style={{ width: 18, height: 18, color: '#8b5cf6' }} />
+              </div>
+              <h3 style={{ fontSize: 17, fontWeight: 600, margin: '0 0 8px' }}>Zero-config container synthesis</h3>
+              <p style={{ fontSize: 13.5, lineHeight: 1.65, color: 'rgba(255,255,255,0.42)', margin: '0 0 20px', maxWidth: 520 }}>
+                No Dockerfile. No CI YAML. FusionHost reads your package.json or requirements.txt, synthesizes an optimized multi-stage container in memory, and keeps every layer cached without committing a single config file.
+              </p>
+              <div style={{ background: 'rgba(0,0,0,0.5)', borderRadius: 8, padding: 12, fontFamily: 'monospace', fontSize: 12 }}>
+                <span style={{ color: 'rgba(255,255,255,0.3)' }}>$ </span>
+                <span style={{ color: '#8b5cf6' }}>git push</span>
+                <span style={{ color: 'rgba(255,255,255,0.5)' }}> origin main</span>
+                <br />
+                <span style={{ color: '#22c55e' }}>&#10003; Container built in 14.2s &middot; 0 config files committed</span>
+              </div>
+            </div>
+
+            {/* Bento Card 2 */}
+            <div style={{ background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 28 }}>
+              <div style={{ width: 36, height: 36, borderRadius: 8, background: 'rgba(96,165,250,0.11)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+                <Database style={{ width: 18, height: 18, color: '#60a5fa' }} />
+              </div>
+              <h3 style={{ fontSize: 17, fontWeight: 600, margin: '0 0 8px' }}>Auto-provisioned PostgreSQL</h3>
+              <p style={{ fontSize: 13.5, lineHeight: 1.65, color: 'rgba(255,255,255,0.42)', margin: '0 0 16px' }}>
+                Import pg, Prisma, or asyncpg and a dedicated database is created and injected automatically.
+              </p>
+              <div style={{ fontFamily: 'monospace', fontSize: 11, color: '#60a5fa', background: 'rgba(96,165,250,0.06)', border: '1px solid rgba(96,165,250,0.2)', borderRadius: 6, padding: '8px 12px' }}>
+                DATABASE_URL=postgres://auto...
+              </div>
+            </div>
+
+            {/* Bento Card 3 */}
+            <div style={{ background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 28 }}>
+              <div style={{ width: 36, height: 36, borderRadius: 8, background: 'rgba(124,58,237,0.14)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+                <RotateCcw style={{ width: 18, height: 18, color: '#8b5cf6' }} />
+              </div>
+              <h3 style={{ fontSize: 17, fontWeight: 600, margin: '0 0 8px' }}>Instant rollback &lt; 4s</h3>
+              <p style={{ fontSize: 13.5, lineHeight: 1.65, color: 'rgba(255,255,255,0.42)', margin: 0 }}>
+                Every release image is preserved. Revert to any past build with a single click or MCP tool call.
+              </p>
+            </div>
+
+            {/* Bento Card 4 */}
+            <div style={{ background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 28 }}>
+              <div style={{ width: 36, height: 36, borderRadius: 8, background: 'rgba(34,197,94,0.11)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+                <Clock style={{ width: 18, height: 18, color: '#22c55e' }} />
+              </div>
+              <h3 style={{ fontSize: 17, fontWeight: 600, margin: '0 0 8px' }}>Scale-to-zero, 1.8s wake</h3>
+              <p style={{ fontSize: 13.5, lineHeight: 1.65, color: 'rgba(255,255,255,0.42)', margin: 0 }}>
+                Idle apps sleep and cost nothing. The reverse proxy wakes them on first request without dropped connections.
+              </p>
+            </div>
+
+            {/* Bento Card 5 */}
+            <div style={{ background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 28 }}>
+              <div style={{ width: 36, height: 36, borderRadius: 8, background: 'rgba(251,191,36,0.11)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+                <Terminal style={{ width: 18, height: 18, color: '#fbbf24' }} />
+              </div>
+              <h3 style={{ fontSize: 17, fontWeight: 600, margin: '0 0 8px' }}>Native MCP server</h3>
+              <p style={{ fontSize: 13.5, lineHeight: 1.65, color: 'rgba(255,255,255,0.42)', margin: 0 }}>
+                Agents deploy, inspect, and self-heal without human relay. One <code style={{ color: 'rgba(255,255,255,0.8)', background: 'rgba(255,255,255,0.08)', padding: '1px 5px', borderRadius: 4 }}>npx @fusionhost/mcp</code> command.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
-        <div className="border border-border/60 bg-gradient-to-b from-surface to-background p-10 sm:p-16 rounded-3xl relative overflow-hidden">
-          <h2 className="text-3xl sm:text-5xl font-extrabold text-white mb-4">
-            Ready to ship with zero config?
-          </h2>
-          <p className="text-slate-400 max-w-xl mx-auto mb-8 text-sm sm:text-base">
+      {/* RADICAL TRANSPARENCY / LIMITATIONS BANNER */}
+      <section style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '60px 20px' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+          <div
+            style={{
+              borderRadius: 12,
+              border: '1px solid rgba(251,191,36,0.25)',
+              background: 'rgba(251,191,36,0.04)',
+              padding: '28px 36px',
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 20,
+            }}
+          >
+            <div style={{ maxWidth: 700 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#fbbf24', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>
+                <AlertTriangle style={{ width: 14, height: 14 }} />
+                Product Principle: Radical Transparency
+              </div>
+              <h3 style={{ fontSize: 20, fontWeight: 700, margin: '0 0 6px', color: '#fff' }}>Say what&apos;s out of scope, loudly.</h3>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', margin: 0, lineHeight: 1.6 }}>
+                We publish our constraints right on the front door: single-instance per app, PostgreSQL only, and ephemeral filesystem. We don&apos;t want you discovering our architectural edges in production.
+              </p>
+            </div>
+            <Link
+              href="/limitations"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                background: 'rgba(251,191,36,0.1)',
+                color: '#fbbf24',
+                border: '1px solid rgba(251,191,36,0.35)',
+                padding: '9px 18px',
+                borderRadius: 6,
+                fontSize: 13,
+                fontWeight: 600,
+                textDecoration: 'none',
+              }}
+            >
+              Read Explicit Constraints
+              <ArrowRight style={{ width: 14, height: 14 }} />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* FINAL CTA BANNER */}
+      <section style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '96px 20px', textAlign: 'center' }}>
+        <div style={{ maxWidth: 700, margin: '0 auto' }}>
+          <h2 style={{ fontSize: 40, fontWeight: 700, letterSpacing: '-0.02em', margin: '0 0 16px' }}>Ready to ship with zero config?</h2>
+          <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.45)', margin: '0 0 32px' }}>
             Join developers and coding agents building on FusionHost. Deploys take seconds, and failed builds never cost a rupee.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 14, flexWrap: 'wrap' }}>
             <Link
               href="/dashboard"
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-primary to-accent-cyan text-slate-950 font-bold px-8 py-3.5 rounded-xl shadow-lg transition-transform hover:scale-105"
+              style={{
+                background: '#fff',
+                color: '#000',
+                padding: '11px 26px',
+                borderRadius: 6,
+                fontSize: 14,
+                fontWeight: 600,
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+              }}
             >
               Open Management Console
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight style={{ width: 15, height: 15 }} />
             </Link>
             <Link
               href="/pricing"
-              className="inline-flex items-center gap-2 bg-surface hover:bg-surface-elevated border border-border text-slate-300 font-medium px-6 py-3.5 rounded-xl transition-colors"
+              style={{
+                background: 'transparent',
+                color: '#fff',
+                border: '1.5px solid rgba(255,255,255,0.2)',
+                padding: '11px 26px',
+                borderRadius: 6,
+                fontSize: 14,
+                fontWeight: 500,
+                textDecoration: 'none',
+              }}
             >
-              View Free &amp; Pro Plans
+              View Pricing
             </Link>
           </div>
         </div>

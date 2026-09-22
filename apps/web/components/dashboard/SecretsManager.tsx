@@ -6,11 +6,9 @@ import {
   Plus,
   Trash2,
   Database,
-  Lock,
   Copy,
   Check,
   Save,
-  AlertCircle,
 } from 'lucide-react';
 
 interface SecretsManagerProps {
@@ -72,62 +70,112 @@ export default function SecretsManager({
   };
 
   return (
-    <div className="space-y-6">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       {/* Database Provisioning Banner */}
       {databaseUrl && (
-        <div className="p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0">
-              <Database className="w-5 h-5" />
+        <div
+          style={{
+            padding: 16,
+            borderRadius: 10,
+            background: 'rgba(124,58,237,0.08)',
+            border: '1px solid rgba(124,58,237,0.25)',
+            display: 'flex',
+            flexWrap: 'wrap',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 16,
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: 8,
+                background: 'rgba(124,58,237,0.18)',
+                color: '#8b5cf6',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
+              <Database style={{ width: 18, height: 18 }} />
             </div>
             <div>
-              <h4 className="font-bold text-white text-xs sm:text-sm">
+              <h4 style={{ fontSize: 13, fontWeight: 700, color: '#fff', margin: 0 }}>
                 Auto-Provisioned PostgreSQL Database
               </h4>
-              <p className="text-[11px] text-slate-300 font-mono mt-0.5 truncate max-w-md">
+              <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: 'monospace', margin: '3px 0 0', maxWidth: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {databaseUrl}
               </p>
             </div>
           </div>
           <button
             onClick={handleCopyDatabaseUrl}
-            className="inline-flex items-center gap-1.5 text-xs bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              fontSize: 12,
+              background: 'rgba(124,58,237,0.15)',
+              color: '#8b5cf6',
+              border: '1px solid rgba(124,58,237,0.35)',
+              padding: '6px 12px',
+              borderRadius: 6,
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all 0.15s',
+            }}
           >
-            {copiedDb ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+            {copiedDb ? <Check style={{ width: 13, height: 13 }} /> : <Copy style={{ width: 13, height: 13 }} />}
             {copiedDb ? 'Copied' : 'Copy Connection URL'}
           </button>
         </div>
       )}
 
       {/* Secrets Card */}
-      <div className="p-6 rounded-xl bg-surface border border-border/70 space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <KeyRound className="w-4 h-4 text-primary" />
-            <h3 className="text-base font-bold text-white">
+      <div style={{ padding: 24, borderRadius: 12, background: '#0d0d0d', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <KeyRound style={{ width: 16, height: 16, color: '#8b5cf6' }} />
+            <h3 style={{ fontSize: 15, fontWeight: 700, color: '#fff', margin: 0 }}>
               Environment Variables &amp; Secrets
             </h3>
           </div>
           <button
             onClick={handleSave}
             disabled={saving}
-            className="inline-flex items-center gap-1.5 bg-primary text-slate-950 text-xs font-bold px-4 py-2 rounded-lg hover:bg-primary-hover transition-colors shadow-sm disabled:opacity-50"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              background: '#7c3aed',
+              color: '#fff',
+              fontSize: 12.5,
+              fontWeight: 600,
+              padding: '8px 16px',
+              borderRadius: 6,
+              border: 'none',
+              cursor: saving ? 'not-allowed' : 'pointer',
+              opacity: saving ? 0.6 : 1,
+            }}
           >
-            <Save className="w-3.5 h-3.5" />
+            <Save style={{ width: 14, height: 14 }} />
             {saving ? 'Saving...' : 'Save Secrets'}
           </button>
         </div>
 
         {savedSuccess && (
-          <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs rounded-lg flex items-center gap-2">
-            <Check className="w-4 h-4" />
+          <div style={{ padding: 12, background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.25)', color: '#22c55e', fontSize: 12.5, borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Check style={{ width: 14, height: 14 }} />
             Secrets updated successfully! Redeploy your application to apply changes.
           </div>
         )}
 
-        <div className="space-y-3">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {vars.map((v, idx) => (
-            <div key={idx} className="flex items-center gap-2">
+            <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <input
                 type="text"
                 value={v.key}
@@ -136,7 +184,7 @@ export default function SecretsManager({
                   copy[idx].key = e.target.value;
                   setVars(copy);
                 }}
-                className="w-1/3 bg-background border border-border rounded-lg px-3 py-1.5 text-xs font-mono text-slate-200 focus:outline-none focus:border-primary"
+                style={{ width: '35%', background: '#000', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, padding: '7px 12px', fontSize: 12, fontFamily: 'monospace', color: '#fff', outline: 'none' }}
               />
               <input
                 type="password"
@@ -146,40 +194,55 @@ export default function SecretsManager({
                   copy[idx].value = e.target.value;
                   setVars(copy);
                 }}
-                className="flex-1 bg-background border border-border rounded-lg px-3 py-1.5 text-xs font-mono text-slate-200 focus:outline-none focus:border-primary"
+                style={{ flex: 1, background: '#000', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, padding: '7px 12px', fontSize: 12, fontFamily: 'monospace', color: '#fff', outline: 'none' }}
               />
               <button
                 onClick={() => handleRemove(idx)}
-                className="p-2 text-slate-500 hover:text-rose-400 transition-colors"
+                style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.35)', cursor: 'pointer', padding: 6, display: 'flex' }}
+                onMouseOver={(e) => (e.currentTarget.style.color = '#f43f5e')}
+                onMouseOut={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.35)')}
                 title="Remove variable"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 style={{ width: 15, height: 15 }} />
               </button>
             </div>
           ))}
 
           {/* Add New Var */}
-          <div className="pt-2 flex items-center gap-2">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingTop: 6 }}>
             <input
               type="text"
               placeholder="VARIABLE_NAME"
               value={newKey}
               onChange={(e) => setNewKey(e.target.value)}
-              className="w-1/3 bg-background border border-border rounded-lg px-3 py-1.5 text-xs font-mono text-slate-200 focus:outline-none focus:border-primary"
+              style={{ width: '35%', background: '#000', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, padding: '7px 12px', fontSize: 12, fontFamily: 'monospace', color: '#fff', outline: 'none' }}
             />
             <input
               type="text"
               placeholder="value or secret token"
               value={newValue}
               onChange={(e) => setNewValue(e.target.value)}
-              className="flex-1 bg-background border border-border rounded-lg px-3 py-1.5 text-xs font-mono text-slate-200 focus:outline-none focus:border-primary"
+              style={{ flex: 1, background: '#000', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 6, padding: '7px 12px', fontSize: 12, fontFamily: 'monospace', color: '#fff', outline: 'none' }}
             />
             <button
               onClick={handleAdd}
               disabled={!newKey}
-              className="bg-surface-elevated hover:bg-slate-700 text-slate-200 border border-border px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors disabled:opacity-50"
+              style={{
+                background: '#161616',
+                color: '#fff',
+                border: '1px solid rgba(255,255,255,0.14)',
+                padding: '7px 14px',
+                borderRadius: 6,
+                fontSize: 12,
+                fontWeight: 600,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                cursor: !newKey ? 'not-allowed' : 'pointer',
+                opacity: !newKey ? 0.5 : 1,
+              }}
             >
-              <Plus className="w-3.5 h-3.5" />
+              <Plus style={{ width: 14, height: 14 }} />
               Add
             </button>
           </div>

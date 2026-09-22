@@ -6,8 +6,6 @@ import {
   CheckCircle2,
   XCircle,
   Clock,
-  GitCommit,
-  ArrowUpRight,
   Loader2,
 } from 'lucide-react';
 import type { Deployment } from '@fusionhost/types';
@@ -36,14 +34,14 @@ export default function DeployHistoryList({
 
   if (deployments.length === 0) {
     return (
-      <div className="p-8 text-center text-xs text-slate-500 bg-surface rounded-xl border border-border/60">
+      <div style={{ padding: 32, textAlign: 'center', fontSize: 13, color: 'rgba(255,255,255,0.4)', background: '#0d0d0d', borderRadius: 12, border: '1px solid rgba(255,255,255,0.08)' }}>
         No deployments found for this application yet.
       </div>
     );
   }
 
   return (
-    <div className="space-y-3">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
       {deployments.map((deploy, index) => {
         const isLatest = index === 0;
         const isHealthy = deploy.status === 'HEALTHY';
@@ -51,66 +49,91 @@ export default function DeployHistoryList({
         return (
           <div
             key={deploy.id}
-            className={`p-4 rounded-xl border transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
-              isLatest
-                ? 'bg-surface border-primary/50 shadow-sm shadow-primary/10'
-                : 'bg-surface/70 border-border/60 hover:border-slate-600'
-            }`}
+            style={{
+              padding: '16px 20px',
+              borderRadius: 10,
+              border: isLatest ? '1px solid rgba(139,92,246,0.4)' : '1px solid rgba(255,255,255,0.08)',
+              background: isLatest ? '#0e0a1a' : '#0d0d0d',
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 16,
+              transition: 'border-color 0.15s',
+            }}
           >
-            <div className="flex items-start sm:items-center gap-3">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
               <div
-                className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                  isHealthy
-                    ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
-                    : 'bg-rose-500/10 text-rose-400 border border-rose-500/30'
-                }`}
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 6,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                  background: isHealthy ? 'rgba(34,197,94,0.1)' : 'rgba(244,63,94,0.1)',
+                  border: isHealthy ? '1px solid rgba(34,197,94,0.3)' : '1px solid rgba(244,63,94,0.3)',
+                  color: isHealthy ? '#22c55e' : '#f43f5e',
+                }}
               >
-                {isHealthy ? (
-                  <CheckCircle2 className="w-4 h-4" />
-                ) : (
-                  <XCircle className="w-4 h-4" />
-                )}
+                {isHealthy ? <CheckCircle2 style={{ width: 16, height: 16 }} /> : <XCircle style={{ width: 16, height: 16 }} />}
               </div>
 
               <div>
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-white text-xs font-mono">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                  <span style={{ fontWeight: 700, color: '#fff', fontSize: 13, fontFamily: 'monospace' }}>
                     Build #{deploy.id.slice(0, 7)}
                   </span>
                   {isLatest && (
-                    <span className="text-[10px] font-semibold bg-primary/20 text-primary px-2 py-0.5 rounded border border-primary/30">
+                    <span style={{ fontSize: 10, fontWeight: 700, background: '#7c3aed', color: '#fff', padding: '2px 8px', borderRadius: 4, letterSpacing: '0.05em' }}>
                       CURRENT ACTIVE RELEASE
                     </span>
                   )}
-                  <span className="text-[10px] text-slate-400 font-mono">
+                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', fontFamily: 'monospace' }}>
                     {deploy.imageTag}
                   </span>
                 </div>
-                <div className="flex items-center gap-3 text-[11px] text-slate-400 mt-1">
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-3 h-3 text-slate-500" />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 11, color: 'rgba(255,255,255,0.4)', marginTop: 4 }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <Clock style={{ width: 12, height: 12 }} />
                     {new Date(deploy.createdAt).toLocaleString()}
                   </span>
                   <span>Port: :{deploy.port}</span>
                   {deploy.databaseUrl && (
-                    <span className="text-emerald-400 font-medium">Postgres Bound</span>
+                    <span style={{ color: '#22c55e', fontWeight: 600 }}>Postgres Bound</span>
                   )}
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 self-end sm:self-auto">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               {!isLatest && isHealthy && (
                 <button
                   onClick={() => handleTriggerRollback(deploy.id)}
                   disabled={rollingBackId !== null}
-                  className="inline-flex items-center gap-1.5 bg-surface-elevated hover:bg-slate-700 text-slate-200 border border-border px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors disabled:opacity-50"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    background: '#161616',
+                    color: '#fff',
+                    border: '1px solid rgba(255,255,255,0.14)',
+                    padding: '6px 14px',
+                    borderRadius: 6,
+                    fontSize: 12,
+                    fontWeight: 600,
+                    cursor: rollingBackId !== null ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.15s',
+                  }}
+                  onMouseOver={(e) => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)')}
+                  onMouseOut={(e) => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.14)')}
                   title="Instantly revert to this pre-built image"
                 >
                   {rollingBackId === deploy.id ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
+                    <Loader2 style={{ width: 13, height: 13, animation: 'spin 1s linear infinite', color: '#8b5cf6' }} />
                   ) : (
-                    <RotateCcw className="w-3.5 h-3.5 text-primary" />
+                    <RotateCcw style={{ width: 13, height: 13, color: '#8b5cf6' }} />
                   )}
                   Rollback to this build
                 </button>

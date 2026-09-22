@@ -4,20 +4,16 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 export const metadata: Metadata = {
-  title: 'FusionHost — "Tell your agent once, ship your app"',
-  description: 'Zero-config PaaS built for AI coding agents and developers. Deterministic analysis, automatic PostgreSQL provisioning, and live deployment in seconds.',
+  title: 'FusionHost — Your fastest path to production',
+  description: 'Intuitive infrastructure to scale any app or agent from your first user to your billionth.',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
-      <body className="min-h-screen flex flex-col bg-background text-slate-100 antialiased selection:bg-primary/30 selection:text-primary">
+    <html lang="en">
+      <body style={{ background: '#000', color: '#fff', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
         <Navbar />
-        <main className="flex-1">{children}</main>
+        <main style={{ flex: 1 }}>{children}</main>
         <Footer />
       </body>
     </html>

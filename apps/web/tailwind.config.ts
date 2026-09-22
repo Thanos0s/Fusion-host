@@ -9,22 +9,25 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: '#090d16',
-        surface: '#0f172a',
-        'surface-elevated': '#1e293b',
-        border: '#334155',
+        background: '#000000',
+        surface: '#0d0d0d',
+        'surface-elevated': '#111111',
+        border: 'rgba(255,255,255,0.08)',
         primary: {
-          DEFAULT: '#38bdf8',
-          hover: '#0ea5e9',
+          DEFAULT: '#7c3aed',
+          hover: '#6d28d9',
+          light: '#8b5cf6',
         },
         accent: {
-          emerald: '#10b981',
-          cyan: '#06b6d4',
-          violet: '#8b5cf6',
-          rose: '#f43f5e',
+          purple: '#8b5cf6',
+          indigo: '#6366f1',
+          emerald: '#22c55e',
+          blue: '#60a5fa',
+          amber: '#fbbf24',
         }
       },
       fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'Fira Code', 'Menlo', 'Consolas', 'monospace'],
       }
     },

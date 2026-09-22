@@ -2,93 +2,39 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Terminal, ShieldAlert, Cpu, Layers, ExternalLink, ArrowRight } from 'lucide-react';
 
 export default function Navbar() {
   const pathname = usePathname();
 
+  const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/80 bg-background/80 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent-emerald flex items-center justify-center text-slate-950 font-black shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform">
-              <Layers className="w-4 h-4" />
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-lg tracking-tight text-white group-hover:text-primary transition-colors">
-                FusionHost
-              </span>
-              <span className="text-[10px] uppercase font-semibold tracking-wider px-1.5 py-0.5 rounded bg-surface-elevated text-accent-cyan border border-accent-cyan/30">
-                Agent-PaaS
-              </span>
-            </div>
-          </Link>
-
-          <nav className="hidden md:flex items-center gap-5 text-sm font-medium text-slate-400">
-            <Link
-              href="/#sandbox"
-              className="hover:text-white transition-colors"
-            >
-              Sandbox
-            </Link>
-            <Link
-              href="/limitations"
-              className={`hover:text-white transition-colors flex items-center gap-1.5 ${
-                pathname === '/limitations' ? 'text-accent-cyan font-semibold' : ''
-              }`}
-            >
-              <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
-              Limitations
-            </Link>
-            <Link
-              href="/pricing"
-              className={`hover:text-white transition-colors ${
-                pathname === '/pricing' ? 'text-accent-cyan font-semibold' : ''
-              }`}
-            >
-              Pricing
-            </Link>
-            <Link
-              href="/compare"
-              className={`hover:text-white transition-colors ${
-                pathname === '/compare' ? 'text-accent-cyan font-semibold' : ''
-              }`}
-            >
-              Compare
-            </Link>
-            <Link
-              href="/docs"
-              className={`hover:text-white transition-colors ${
-                pathname === '/docs' ? 'text-accent-cyan font-semibold' : ''
-              }`}
-            >
-              Docs
-            </Link>
-          </nav>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <Link
-            href="/api/agent-md"
-            target="_blank"
-            className="hidden sm:inline-flex items-center gap-1 text-xs text-slate-400 hover:text-slate-200 border border-slate-700/60 bg-surface px-2.5 py-1.5 rounded-md transition-colors"
-            title="Machine-readable instructions for AI agents"
-          >
-            <Terminal className="w-3 h-3 text-emerald-400" />
-            agent.md
-            <ExternalLink className="w-2.5 h-2.5 ml-0.5 opacity-60" />
-          </Link>
-
-          <Link
-            href="/dashboard"
-            className="inline-flex items-center gap-1.5 bg-gradient-to-r from-primary to-accent-cyan hover:from-primary-hover hover:to-accent-cyan text-slate-950 text-xs font-semibold px-4 py-2 rounded-lg shadow-sm hover:shadow-primary/20 transition-all"
-          >
-            Dashboard
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
+    <>
+      {/* Announcement bar */}
+      <div style={{ background: 'linear-gradient(90deg,#3b1d8a 0%,#4c1d95 40%,#5b21b6 70%,#3b1d8a 100%)', padding: '8px 16px', textAlign: 'center', fontSize: 14, fontWeight: 500, color: 'rgba(255,255,255,0.9)' }}>
+        Deploying your first agent app? Get up to &#8377;10,000 in launch credits.&nbsp;
+        <Link href="/pricing" style={{ textDecoration: 'underline', textUnderlineOffset: 2, fontWeight: 600, color: 'inherit' }}>Apply now</Link>
       </div>
-    </header>
+
+      <header style={{ position: 'sticky', top: 0, zIndex: 50, background: '#000', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 20px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
+            <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M13 2L4.09 12.11A1 1 0 005 13.8H11V22l8.91-10.11A1 1 0 0019 10.2H13V2Z"/></svg>
+              <span style={{ fontWeight: 600, fontSize: 15, color: '#fff', letterSpacing: '-0.01em' }}>FusionHost</span>
+            </Link>
+            <nav style={{ display: 'flex', alignItems: 'center', gap: 20, fontSize: 13.5, fontWeight: 500 }} className="hidden md:flex">
+              {[['/', 'Product'], ['/docs', 'Developers'], ['/compare', 'Resources'], ['/pricing', 'Pricing'], ['/limitations', 'Company']].map(([href, label]) => (
+                <Link key={href} href={href} style={{ color: isActive(href) && href !== '/' ? '#fff' : 'rgba(255,255,255,0.52)', textDecoration: 'none' }}>{label}</Link>
+              ))}
+            </nav>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <Link href="/compare" className="hidden md:block" style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.52)', fontWeight: 500, textDecoration: 'none' }}>Migrate to FusionHost</Link>
+            <Link href="/dashboard" style={{ background: '#fff', color: '#000', fontSize: 13.5, fontWeight: 600, padding: '6px 16px', borderRadius: 5, textDecoration: 'none' }}>Dashboard</Link>
+          </div>
+        </div>
+      </header>
+    </>
   );
 }
