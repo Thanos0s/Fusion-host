@@ -33,6 +33,23 @@ export function createServer() {
     handleProxyRequest(req, res, appName, stripped);
   });
 
+  // Root endpoint
+  app.get('/', (_req: Request, res: Response) => {
+    res.json({
+      service: 'fusionhost-control-plane',
+      status: 'operational',
+      version: '1.0.0',
+      dashboard: 'http://localhost:3000/dashboard',
+      docs: 'http://localhost:3000/docs',
+      activeRoutes: store.getAllRoutes().map(r => ({
+        appName: r.appName,
+        liveUrl: `http://localhost:4000/live/${r.appName}`,
+        targetPort: r.targetPort,
+        status: r.status,
+      }))
+    });
+  });
+
   // Health check endpoint
   app.get('/health', (_req: Request, res: Response) => {
     res.json({ status: 'ok', service: 'fusionhost-control-plane', timestamp: new Date().toISOString() });

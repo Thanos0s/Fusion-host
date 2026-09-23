@@ -33,7 +33,7 @@ export class DockerOrchestrator {
 
   async isDockerAvailable(): Promise<boolean> {
     try {
-      await execAsync('docker --version');
+      await execAsync('docker ps');
       return true;
     } catch {
       return false;
