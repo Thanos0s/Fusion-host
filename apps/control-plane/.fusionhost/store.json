@@ -3,14 +3,14 @@
     {
       "id": "fde86edb-720d-4bab-b457-67b3722eb925",
       "name": "api-test-service",
-      "sourcePath": "C:\\Users\\kidss\\AppData\\Local\\Temp\\fusionhost-api-test-qbVHRx",
-      "status": "FAILED",
+      "sourcePath": "C:\\Users\\kidss\\AppData\\Local\\Temp\\fusionhost-api-test-a73lJC",
+      "status": "HEALTHY",
       "liveUrl": "http://localhost:4000/live/api-test-service",
       "port": 3000,
       "needsPostgres": false,
       "createdAt": "2026-09-22T05:19:32.385Z",
-      "updatedAt": "2026-09-22T05:29:06.166Z",
-      "activeDeploymentId": "3afeaf78"
+      "updatedAt": "2026-10-29T06:38:30.868Z",
+      "activeDeploymentId": "f2d60881"
     }
   ],
   "deployments": [
@@ -89,6 +89,166 @@
       ],
       "createdAt": "2026-09-22T05:29:05.926Z",
       "updatedAt": "2026-09-22T05:29:06.166Z"
+    },
+    {
+      "id": "76061927",
+      "appId": "fde86edb-720d-4bab-b457-67b3722eb925",
+      "appName": "api-test-service",
+      "status": "CRASHED",
+      "imageTag": "fusionhost/api-test-service:76061927",
+      "port": 5122,
+      "internalPort": 3000,
+      "envVars": {},
+      "appSpec": {
+        "appName": "api-test-service",
+        "runtime": "node",
+        "version": "22",
+        "framework": "Node.js (Standard)",
+        "startCommand": "npm start",
+        "port": 3000,
+        "needsPostgres": false,
+        "hasExistingDockerfile": false,
+        "requiredEnvVars": [],
+        "citations": {
+          "manifest": "package.json",
+          "appName": "package.json#name",
+          "version": "default (Node.js 22 LTS)",
+          "framework": "inferred from package.json",
+          "startCommand": "package.json#scripts.start",
+          "port": "framework default (3000)"
+        },
+        "hazards": []
+      },
+      "logs": [
+        "[11:49:35 am] [Analysis] Runtime: node | Framework: Node.js (Standard) | Port: 3000",
+        "[11:49:35 am] [Analysis] Start command: npm start",
+        "[11:49:35 am] [Process Runner] Using managed process execution on port 5122...",
+        "[11:49:35 am] [Start] Spawning process: npm start...",
+        "[11:49:35 am] [Health Check] Polling http://127.0.0.1:5122...",
+        "[11:49:35 am] [Process Error] spawn C:\\Windows\\system32\\cmd.exe ENOENT"
+      ],
+      "createdAt": "2026-10-29T06:19:34.882Z",
+      "updatedAt": "2026-10-29T06:19:35.330Z"
+    },
+    {
+      "id": "0bb32449",
+      "appId": "fde86edb-720d-4bab-b457-67b3722eb925",
+      "appName": "api-test-service",
+      "status": "HEALTHY",
+      "imageTag": "fusionhost/api-test-service:0bb32449",
+      "port": 5577,
+      "internalPort": 3000,
+      "envVars": {},
+      "appSpec": {
+        "appName": "api-test-service",
+        "runtime": "node",
+        "version": "22",
+        "framework": "Node.js (Standard)",
+        "startCommand": "npm start",
+        "port": 3000,
+        "needsPostgres": false,
+        "hasExistingDockerfile": false,
+        "requiredEnvVars": [],
+        "citations": {
+          "manifest": "package.json",
+          "appName": "package.json#name",
+          "version": "default (Node.js 22 LTS)",
+          "framework": "inferred from package.json",
+          "startCommand": "package.json#scripts.start",
+          "port": "framework default (3000)"
+        },
+        "hazards": []
+      },
+      "logs": [
+        "[11:51:29 am] [Analysis] Runtime: node | Framework: Node.js (Standard) | Port: 3000",
+        "[11:51:29 am] [Analysis] Start command: npm start",
+        "[11:51:29 am] [Process Runner] Using managed process execution on port 5577...",
+        "[11:51:29 am] [Start] Spawning process: npm start...",
+        "[11:51:29 am] [Health Check] Polling http://127.0.0.1:5577...",
+        "[11:51:29 am] [Process Error] spawn C:\\Windows\\system32\\cmd.exe ENOENT"
+      ],
+      "createdAt": "2026-10-29T06:21:28.988Z",
+      "updatedAt": "2026-10-29T06:21:50.067Z"
+    },
+    {
+      "id": "77c11e6f",
+      "appId": "fde86edb-720d-4bab-b457-67b3722eb925",
+      "appName": "api-test-service",
+      "status": "HEALTHY",
+      "imageTag": "fusionhost/api-test-service:77c11e6f",
+      "port": 5170,
+      "internalPort": 3000,
+      "envVars": {},
+      "appSpec": {
+        "appName": "api-test-service",
+        "runtime": "node",
+        "version": "22",
+        "framework": "Node.js (Standard)",
+        "startCommand": "npm start",
+        "port": 3000,
+        "needsPostgres": false,
+        "hasExistingDockerfile": false,
+        "requiredEnvVars": [],
+        "citations": {
+          "manifest": "package.json",
+          "appName": "package.json#name",
+          "version": "default (Node.js 22 LTS)",
+          "framework": "inferred from package.json",
+          "startCommand": "package.json#scripts.start",
+          "port": "framework default (3000)"
+        },
+        "hazards": []
+      },
+      "logs": [
+        "[12:03:20 pm] [Analysis] Runtime: node | Framework: Node.js (Standard) | Port: 3000",
+        "[12:03:21 pm] [Analysis] Start command: npm start",
+        "[12:03:21 pm] [Process Runner] Using managed process execution on port 5170...",
+        "[12:03:21 pm] [Start] Spawning process: npm start...",
+        "[12:03:21 pm] [Health Check] Polling http://127.0.0.1:5170...",
+        "[12:03:21 pm] [Process Error] spawn C:\\Windows\\system32\\cmd.exe ENOENT"
+      ],
+      "createdAt": "2026-10-29T06:33:20.674Z",
+      "updatedAt": "2026-10-29T06:33:41.260Z"
+    },
+    {
+      "id": "f2d60881",
+      "appId": "fde86edb-720d-4bab-b457-67b3722eb925",
+      "appName": "api-test-service",
+      "status": "HEALTHY",
+      "imageTag": "fusionhost/api-test-service:f2d60881",
+      "port": 5460,
+      "internalPort": 3000,
+      "envVars": {},
+      "appSpec": {
+        "appName": "api-test-service",
+        "runtime": "node",
+        "version": "22",
+        "framework": "Node.js (Standard)",
+        "startCommand": "npm start",
+        "port": 3000,
+        "needsPostgres": false,
+        "hasExistingDockerfile": false,
+        "requiredEnvVars": [],
+        "citations": {
+          "manifest": "package.json",
+          "appName": "package.json#name",
+          "version": "default (Node.js 22 LTS)",
+          "framework": "inferred from package.json",
+          "startCommand": "package.json#scripts.start",
+          "port": "framework default (3000)"
+        },
+        "hazards": []
+      },
+      "logs": [
+        "[12:08:10 pm] [Analysis] Runtime: node | Framework: Node.js (Standard) | Port: 3000",
+        "[12:08:10 pm] [Analysis] Start command: npm start",
+        "[12:08:10 pm] [Process Runner] Using managed process execution on port 5460...",
+        "[12:08:10 pm] [Start] Spawning process: npm start...",
+        "[12:08:10 pm] [Health Check] Polling http://127.0.0.1:5460...",
+        "[12:08:10 pm] [Process Error] spawn C:\\Windows\\system32\\cmd.exe ENOENT"
+      ],
+      "createdAt": "2026-10-29T06:38:10.337Z",
+      "updatedAt": "2026-10-29T06:38:30.868Z"
     }
   ]
 }

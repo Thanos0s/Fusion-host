@@ -34,7 +34,12 @@ export class MemoryStore {
           for (const a of data.apps) this.apps.set(a.id, a);
         }
         if (data.deployments) {
-          for (const d of data.deployments) this.deployments.set(d.id, d);
+          for (const d of data.deployments) {
+            this.deployments.set(d.id, d);
+            if (d.logs && Array.isArray(d.logs)) {
+              this.logs.set(d.id, [...d.logs]);
+            }
+          }
         }
       }
     } catch {

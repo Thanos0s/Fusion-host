@@ -57,38 +57,95 @@ export default function DashboardPage() {
   const [liveControlPlane, setLiveControlPlane] = useState(false);
 
   useEffect(() => {
-    fetch('http://localhost:4000/api/apps')
-      .then(res => res.json())
-      .then(data => {
-        if (data.apps && data.apps.length > 0) {
-          setApps(data.apps);
-          setLiveControlPlane(true);
-        }
-      })
-      .catch(() => {});
+    const fetchApps = () => {
+      fetch('http://localhost:4000/api/apps')
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.apps && data.apps.length > 0) {
+            setApps(data.apps);
+            setLiveControlPlane(true);
+          }
+        })
+        .catch(() => {});
+    };
+
+    fetchApps();
+    const interval = setInterval(fetchApps, 4000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleDeployFromFolder = async (folderPath: string, appName: string) => {
+    const safeName = appName.toLowerCase().replace(/[^a-z0-9-_]/g, '-');
+    const tempId = `app-${Date.now().toString().slice(-6)}`;
+    const tempDepId = `dep-${Date.now().toString().slice(-6)}`;
+
     const newApp: AppRecord = {
-      id: `app-${Date.now().toString().slice(-6)}`,
-      name: appName.toLowerCase().replace(/[^a-z0-9-_]/g, '-'),
+      id: tempId,
+      name: safeName,
       sourcePath: folderPath,
-      activeDeploymentId: `dep-${Date.now().toString().slice(-6)}`,
-      status: 'HEALTHY',
-      liveUrl: `http://localhost:4000/live/${appName}`,
+      activeDeploymentId: tempDepId,
+      status: 'BUILDING',
+      liveUrl: `http://localhost:4000/live/${safeName}`,
       port: 3000,
       needsPostgres: true,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    setApps([newApp, ...apps]);
+
+    setApps((prev) => [newApp, ...prev.filter((a) => a.name !== safeName)]);
+
     try {
-      await fetch('http://localhost:4000/api/deploy', {
+      const res = await fetch('http://localhost:4000/api/deploy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path: folderPath, appName }),
+        body: JSON.stringify({ path: folderPath, appName: safeName }),
       });
-    } catch {}
+
+      if (res.ok) {
+        const data = await res.json();
+        const deployId = data.deploymentId;
+        const actualAppId = data.appId;
+
+        // Poll deployment status
+        let attempts = 0;
+        const pollInterval = setInterval(async () => {
+          attempts++;
+          try {
+            const statusRes = await fetch(`http://localhost:4000/api/deployments/${deployId}`);
+            if (statusRes.ok) {
+              const depData = await statusRes.json();
+              setApps((prev) =>
+                prev.map((a) =>
+                  a.id === actualAppId || a.id === tempId || a.name === safeName
+                    ? {
+                        ...a,
+                        id: actualAppId,
+                        activeDeploymentId: deployId,
+                        status: depData.status,
+                        liveUrl: data.liveUrl || a.liveUrl,
+                        updatedAt: new Date().toISOString(),
+                      }
+                    : a
+                )
+              );
+
+              if (['HEALTHY', 'FAILED', 'CRASHED'].includes(depData.status) || attempts > 30) {
+                clearInterval(pollInterval);
+              }
+            }
+          } catch {
+            if (attempts > 30) clearInterval(pollInterval);
+          }
+        }, 1500);
+      }
+    } catch {
+      // If control plane is offline, simulate completion for offline sandbox
+      setTimeout(() => {
+        setApps((prev) =>
+          prev.map((a) => (a.id === tempId ? { ...a, status: 'HEALTHY' } : a))
+        );
+      }, 3000);
+    }
   };
 
   return (

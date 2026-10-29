@@ -94,18 +94,20 @@ export function handleProxyRequest(
   // Update last active for scale-to-zero tracking
   route.lastActiveAt = Date.now();
 
+  const headers: Record<string, any> = {
+    ...req.headers,
+    'x-forwarded-host': req.headers.host || '',
+    'x-forwarded-for': req.socket.remoteAddress || '',
+    'x-forwarded-proto': 'http',
+    host: `127.0.0.1:${route.targetPort}`
+  };
+
   const options: http.RequestOptions = {
     hostname: '127.0.0.1',
     port: route.targetPort,
     path: strippedPath || '/',
     method: req.method,
-    headers: {
-      ...req.headers,
-      'x-forwarded-host': req.headers.host || '',
-      'x-forwarded-for': req.socket.remoteAddress || '',
-      'x-forwarded-proto': 'http',
-      host: `127.0.0.1:${route.targetPort}`
-    }
+    headers,
   };
 
   const proxyReq = http.request(options, (proxyRes) => {
@@ -114,8 +116,9 @@ export function handleProxyRequest(
   });
 
   proxyReq.on('error', (err) => {
-    res.writeHead(502, { 'Content-Type': 'text/html; charset=utf-8' });
-    res.end(`
+    if (!res.headersSent) {
+      res.writeHead(502, { 'Content-Type': 'text/html; charset=utf-8' });
+      res.end(`
       <!DOCTYPE html>
       <html>
         <head>
@@ -168,7 +171,18 @@ export function handleProxyRequest(
         </body>
       </html>
     `);
+    }
   });
 
-  req.pipe(proxyReq, { end: true });
+  if (req.method === 'GET' || req.method === 'HEAD') {
+    proxyReq.end();
+  } else if ((req as any).readableEnded) {
+    if ((req as any).body) {
+      const data = typeof (req as any).body === 'string' ? (req as any).body : JSON.stringify((req as any).body);
+      proxyReq.write(data);
+    }
+    proxyReq.end();
+  } else {
+    req.pipe(proxyReq, { end: true });
+  }
 }

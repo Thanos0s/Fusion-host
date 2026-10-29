@@ -13,7 +13,6 @@ import { handleProxyRequest } from './proxy/router.js';
 export function createServer() {
   const app = express();
   app.use(cors());
-  app.use(express.json());
 
   // Proxy interceptor for subdomain routing: <app>.localhost:4000
   app.use((req, res, next) => {
@@ -32,6 +31,8 @@ export function createServer() {
     const stripped = req.url === '/' ? '/' : req.url;
     handleProxyRequest(req, res, appName, stripped);
   });
+
+  app.use(express.json());
 
   // Root endpoint
   app.get('/', (_req: Request, res: Response) => {

@@ -9,8 +9,11 @@
     "apps/*"
   ],
   "scripts": {
+    "dev": "node scripts/dev.js",
     "dev:web": "npm --workspace=@fusionhost/web run dev",
     "dev:control-plane": "npm --workspace=@fusionhost/control-plane run dev",
+    "start:control-plane": "node apps/control-plane/dist/index.js",
+    "start:web": "npm --workspace=@fusionhost/web run start",
     "build": "npm run build --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "mcp": "node packages/mcp/dist/bin/fusionhost-mcp.js"

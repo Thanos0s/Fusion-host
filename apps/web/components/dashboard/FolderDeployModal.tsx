@@ -17,8 +17,25 @@ export default function FolderDeployModal({ isOpen, onClose, onDeploy }: FolderD
 
   if (!isOpen) return null;
 
-  const handleSimulateAnalysis = () => {
+  const handleSimulateAnalysis = async () => {
     setAnalyzing(true);
+    try {
+      const res = await fetch('http://localhost:4000/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: folderPath }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setPreviewSpec(data);
+        if (data.appName && !appName) {
+          setAppName(data.appName);
+        }
+        setAnalyzing(false);
+        return;
+      }
+    } catch {}
+
     setTimeout(() => {
       setAnalyzing(false);
       setPreviewSpec({
