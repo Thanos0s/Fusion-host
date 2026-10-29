@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import type { AppRecord } from '@fusionhost/types';
-import FolderDeployModal from '@/components/dashboard/FolderDeployModal';
+import GitHubDeployModal from '@/components/dashboard/GitHubDeployModal';
 
 const INITIAL_DEMO_APPS: AppRecord[] = [
   {
@@ -74,7 +74,7 @@ export default function DashboardPage() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleDeployFromFolder = async (folderPath: string, appName: string) => {
+  const handleDeploy = async (sourcePath: string, appName: string) => {
     const safeName = appName.toLowerCase().replace(/[^a-z0-9-_]/g, '-');
     const tempId = `app-${Date.now().toString().slice(-6)}`;
     const tempDepId = `dep-${Date.now().toString().slice(-6)}`;
@@ -82,7 +82,7 @@ export default function DashboardPage() {
     const newApp: AppRecord = {
       id: tempId,
       name: safeName,
-      sourcePath: folderPath,
+      sourcePath,
       activeDeploymentId: tempDepId,
       status: 'BUILDING',
       liveUrl: `http://localhost:4000/live/${safeName}`,
@@ -98,7 +98,7 @@ export default function DashboardPage() {
       const res = await fetch('http://localhost:4000/api/deploy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path: folderPath, appName: safeName }),
+        body: JSON.stringify({ path: sourcePath, appName: safeName }),
       });
 
       if (res.ok) {
@@ -171,9 +171,9 @@ export default function DashboardPage() {
           style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#7c3aed', color: '#fff', fontSize: 13.5, fontWeight: 600, padding: '9px 18px', borderRadius: 6, border: 'none', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}
         >
           <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/>
           </svg>
-          Deploy Local Folder
+          New Deployment
         </button>
       </div>
 
@@ -243,7 +243,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <FolderDeployModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onDeploy={handleDeployFromFolder} />
+      <GitHubDeployModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onDeploy={handleDeploy} />
     </div>
   );
 }
