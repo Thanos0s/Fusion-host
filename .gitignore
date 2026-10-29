@@ -11,3 +11,5 @@ build/
 coverage/
 tmp/
 .fusionhost/repos/
+**/.fusionhost/
+.superpowers/
