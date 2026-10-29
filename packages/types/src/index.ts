@@ -92,3 +92,38 @@ export interface DeploymentLogEntry {
   stream: 'stdout' | 'stderr' | 'system';
   message: string;
 }
+
+export interface GitHubUser {
+  login: string;
+  name?: string;
+  avatarUrl: string;
+  htmlUrl: string;
+  publicRepos: number;
+  totalPrivateRepos?: number;
+}
+
+export interface GitHubRepo {
+  id: number;
+  name: string;
+  fullName: string;
+  private: boolean;
+  htmlUrl: string;
+  cloneUrl: string;
+  description?: string;
+  defaultBranch: string;
+  language?: string;
+  stars: number;
+  updatedAt: string;
+}
+
+export interface GitHubBranch {
+  name: string;
+  protected?: boolean;
+}
+
+export interface GitHubImportResult {
+  success: boolean;
+  localPath: string;
+  appName: string;
+  spec: AppSpec;
+}
