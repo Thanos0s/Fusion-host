@@ -9,6 +9,7 @@ import { analyzeProject } from '@fusionhost/engine';
 import { store } from './store/memory.js';
 import { orchestrator } from './orchestrator/docker.js';
 import { handleProxyRequest } from './proxy/router.js';
+import { githubService } from './github/service.js';
 
 export function createServer() {
   const app = express();
@@ -198,6 +199,65 @@ export function createServer() {
       }
     }
     res.json({ success: true, message: 'Secrets updated. Redeploy to apply changes to container.' });
+  });
+
+  // 9. GitHub Integration Endpoints
+  app.post('/api/github/connect', async (req: Request, res: Response) => {
+    try {
+      const { token } = req.body || {};
+      if (!token) {
+        return res.status(401).json({ error: 'GitHub personal access token is required' });
+      }
+      const user = await githubService.connect(token);
+      res.json({ success: true, user });
+    } catch (err: any) {
+      res.status(401).json({ error: err.message });
+    }
+  });
+
+  app.get('/api/github/status', (_req: Request, res: Response) => {
+    res.json({
+      connected: githubService.isConnected(),
+      user: githubService.getUser(),
+    });
+  });
+
+  app.get('/api/github/repos', async (req: Request, res: Response) => {
+    try {
+      const search = typeof req.query.search === 'string' ? req.query.search : undefined;
+      const repos = await githubService.listRepositories(search);
+      res.json({ repos });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get('/api/github/repos/:owner/:repo/branches', async (req: Request, res: Response) => {
+    try {
+      const { owner, repo } = req.params;
+      const branches = await githubService.listBranches(owner, repo);
+      res.json({ branches });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/github/import', async (req: Request, res: Response) => {
+    try {
+      const { repoUrl, branch, appName } = req.body || {};
+      if (!repoUrl) {
+        return res.status(400).json({ error: 'Missing repoUrl in request body' });
+      }
+      const result = await githubService.importRepository(repoUrl, branch, appName);
+      res.json(result);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/github/disconnect', (_req: Request, res: Response) => {
+    githubService.disconnect();
+    res.json({ success: true });
   });
 
   const httpServer = http.createServer(app);
