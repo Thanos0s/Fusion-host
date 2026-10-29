@@ -31,37 +31,59 @@ npx @fusionhost/mcp
 
 ## 2. Autonomous Deploy Loop
 
-Always follow this 4-step autonomous workflow:
+Always follow this autonomous workflow:
 
 ```
-+------------------------+
-| 1. analyze_repository  | -> Inspect inferred App Spec, citations & hazards
-+-----------+------------+
-            |
-            v
-+------------------------+
-| 2. Resolve Hazards     | -> Ensure required env vars exist; fix disk writes
-+-----------+------------+
-            |
-            v
-+------------------------+
-| 3. deploy_app          | -> Receive deploymentId and live URL
-+-----------+------------+
-            |
-            +--------------------+
-            |                    |
-       [Success]              [Failure]
-            |                    |
-            v                    v
-+------------------------+ +------------------------+
-| App is live at URL!    | | 4. get_deployment_logs |
-| No human relay needed. | +-----------+------------+
-+------------------------+             |
-                                       v
-                           +------------------------+
-                           | Auto-patch code error  |
-                           | and call deploy_app    |
-                           +------------------------+
+[Local Workspace]                   [Remote GitHub Repository]
++------------------------+          +------------------------------------+
+| 1. analyze_repository  |          | 0. import_github_repository        |
++-----------+------------+          +-----------------+------------------+
+            |                                         | (clones & analyzes)
+            |                                         v
+            +---------------------> +-----------------+------------------+
+                                    | 2. Resolve Hazards & Secrets       |
+                                    +-----------------+------------------+
+                                                      |
+                                                      v
+                                    +-----------------+------------------+
+                                    | 3. deploy_app (path = localPath)   |
+                                    +-----------------+------------------+
+                                                      |
+                                    +-----------------+------------------+
+                                    |                                    |
+                               [Success]                              [Failure]
+                                    |                                    |
+                                    v                                    v
+                        +------------------------+           +------------------------+
+                        | App is live at URL!    |           | 4. get_deployment_logs |
+                        | No human relay needed. |           +-----------+------------+
+                        +------------------------+                       |
+                                                                         v
+                                                             +------------------------+
+                                                             | Auto-patch code error  |
+                                                             | and call deploy_app    |
+                                                             +------------------------+
+```
+
+### Step 0: Import from GitHub (Remote Workspaces)
+When working with remote repositories, import the repository into your local FusionHost workspace first:
+```typescript
+const result = await import_github_repository({
+  repo_url: "https://github.com/octocat/my-service",
+  branch: "main"
+});
+```
+The returned `result` provides:
+- `localPath`: Path to the cloned workspace ready for deployment
+- `appName`: Extracted or specified application identifier
+- `spec`: Full deterministic `AppSpec` with citations and hazards
+
+You can then pass `result.localPath` directly to `deploy_app`:
+```typescript
+await deploy_app({
+  path: result.localPath,
+  app_name: result.appName
+});
 ```
 
 ### Step 1: Analyze First
@@ -110,6 +132,7 @@ If the deployment state transitions to `FAILED` or `CRASHED`:
 | Tool Name | Parameters | Description |
 |---|---|---|
 | `analyze_repository` | `{ path: string }` | Deterministic inspection producing `AppSpec` with citations and hazards. |
+| `import_github_repository` | `{ repo_url: string, branch?: string, app_name?: string, token?: string }` | Clones and analyzes a GitHub repo into local workspace, returning `AppSpec` and `localPath` for `deploy_app`. |
 | `deploy_app` | `{ path: string, app_name?: string, env_vars?: Record<string, string> }` | Packages, builds, provisions, and deploys the app. |
 | `get_deployment_status` | `{ deployment_id: string }` | Returns status (`BUILDING`, `HEALTHY`, `FAILED`, `CRASHED`). |
 | `get_deployment_logs` | `{ deployment_id: string, limit?: number }` | Streams build and container stdout/stderr. |

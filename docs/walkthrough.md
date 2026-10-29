@@ -69,6 +69,13 @@ Publishes the 6 platform constraints prominently before signup:
 - Complete setup snippet for Claude Code, Cursor, and Windsurf.
 - Direct endpoint serving raw `agent.md`.
 
+#### 8. GitHub Account Integration & Repository Importer (`http://localhost:3000/dashboard` -> Import from GitHub)
+- **Personal Access Token (PAT) Setup**: Connect GitHub accounts securely using granular or classic tokens with `repo` and `read:user` scopes. Token credentials are fully redacted from error logs and traces.
+- **Repository Browsing & Instant Search**: Interactive repository explorer filtering public and private repositories by name, description, and star rating.
+- **Branch Selection**: Automatically queries repository branch heads (`main`, `master`, feature branches) for granular release targets.
+- **1-Click Shipping**: Clones remote repositories directly into local FusionHost workspaces, analyzes `AppSpec` with exact manifest citations, provisions PostgreSQL when required, and transitions directly into live deployment.
+- **Autonomous Agent MCP Tool**: Exposes `import_github_repository` over MCP stdio so coding agents can import and ship GitHub repositories end-to-end without human intervention.
+
 ---
 
 ### Verification Summary
@@ -80,5 +87,6 @@ Publishes the 6 platform constraints prominently before signup:
 | Model Context Protocol (MCP) Server | `npm --workspace=@fusionhost/mcp run test` | **100% Passed** |
 | Control Plane REST & WebSocket API | `npm --workspace=@fusionhost/control-plane run test` | **100% Passed** |
 | End-to-End Fixture Deploy Verification | `node --test test/e2e.test.ts` | **100% Passed** |
+| End-to-End GitHub Integration Verification | `node --test test/github-e2e.test.ts` | **100% Passed** |
 | Next.js Web App Production Build | `npm --workspace=@fusionhost/web run build` | **10/10 Routes Passed** |
 | Live HTTP Routes | `GET /, /dashboard, /limitations` | **Status 200 OK** |
