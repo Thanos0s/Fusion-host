@@ -1,6 +1,6 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { execSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 import type { GitHubUser, GitHubRepo, GitHubImportResult } from '@fusionhost/types';
 import { analyzeProject } from '@fusionhost/engine';
 
@@ -209,18 +209,31 @@ export class GitHubService {
     } else {
       let cloneUrl = repoUrl;
       if (this.token && repoUrl.startsWith('https://github.com/')) {
-        cloneUrl = repoUrl.replace('https://github.com/', `https://${this.token}@github.com/`);
+        const encodedToken = encodeURIComponent(this.token);
+        cloneUrl = repoUrl.replace('https://github.com/', `https://${encodedToken}@github.com/`);
       }
 
       try {
-        execSync(`git clone --depth 1 -b ${branch} "${cloneUrl}" "${targetDir}"`, {
+        execFileSync('git', ['-c', 'credential.helper=', 'clone', '--depth', '1', '-b', branch, cloneUrl, targetDir], {
           stdio: 'pipe',
           timeout: 60000,
+          env: {
+            ...process.env,
+            GIT_TERMINAL_PROMPT: '0',
+            GCM_INTERACTIVE: 'never',
+          },
         });
       } catch (err: any) {
         // If git clone fails, check if local directory fallback or target exists
         if (!fs.existsSync(targetDir) || fs.readdirSync(targetDir).length === 0) {
-          throw new Error(`Failed to clone repository: ${err.message || String(err)}`);
+          const stderrText = err.stderr ? err.stderr.toString() : '';
+          let errMsg = stderrText || err.message || String(err);
+          if (this.token) {
+            errMsg = errMsg
+              .replaceAll(this.token, '***')
+              .replaceAll(encodeURIComponent(this.token), '***');
+          }
+          throw new Error(`Failed to clone repository: ${errMsg.trim()}`);
         }
       }
     }

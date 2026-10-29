@@ -98,6 +98,22 @@ test('GitHubService branch listing with mock branches', async () => {
   assert.deepEqual(branches, ['main', 'feat/dark-mode', 'fix/nav']);
 });
 
+test('GitHubService redacts token in error message on clone failure', async () => {
+  const service = new GitHubService();
+  const secretToken = 'ghp_super_secret_token_12345';
+  service.setMockUser({ login: 'octocat', avatarUrl: '', htmlUrl: '', publicRepos: 0 }, secretToken);
+
+  await assert.rejects(
+    async () => {
+      await service.importRepository('https://github.com/invalid-owner-9999/non-existent-repo-99999.git');
+    },
+    (err: Error) => {
+      assert.ok(!err.message.includes(secretToken), 'Error message must not contain raw token');
+      return true;
+    }
+  );
+});
+
 test('GitHubService importRepository with local simulated project', async () => {
   const service = new GitHubService();
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fusionhost-repo-import-'));
